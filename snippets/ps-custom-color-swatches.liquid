@@ -1,0 +1,36 @@
+{%- liquid
+  assign option_index = option_index | default: 0
+  assign option = product.options_with_values[option_index]
+  assign selected_value = product.selected_or_first_available_variant.options[option_index]
+-%}
+
+{% if option.name == 'Color' %}
+  <div class="custom-color-swatches variant__input">
+    <label class="variant__label">{{ option.name }}</label>
+    <div class="swatches-grid">
+      {% for value in option.values %}
+        {%- assign handle = value | handleize | downcase -%}
+        {%- assign swatch_src = handle | append: '.png' | asset_url -%}
+        {%- assign is_selected = selected_value == value -%}
+
+        <label class="swatch {% if is_selected %}swatch--selected{% endif %}" 
+               title="{{ value }}">
+          <input type="radio"
+                 name="{{ option.name }}"
+                 value="{{ value | escape }}"
+                 data-index="{{ option_index }}"
+                 {% if is_selected %}checked{% endif %}
+                 class="swatch__input">
+          <img src="{{ swatch_src }}" 
+               alt="{{ value }}" 
+               class="swatch__image" 
+               width="40" height="40" 
+               loading="lazy"
+               onerror="this.src='{{ 'no-image.png' | asset_url }}'; this.alt='Couleur non disponible';">
+          <!-- Optionnel : enlève la ligne suivante si tu veux seulement l'image sans texte -->
+          <span class="swatch__label">{{ value }}</span>
+        </label>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
