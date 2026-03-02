@@ -1,0 +1,109 @@
+
+
+<rte-formatter>
+  {{ page.content }}
+</rte-formatter>
+
+{% schema %}
+{
+  "name": "t:names.page_content",
+  "class": "rte"
+}
+{% endschema %}
+
+
+<!-- modification mauricio 15-01-26 -->
+
+<!-- Container pour centrer et limiter la largeur du formulaire -->
+<div style="max-width: 900px; margin: 0 auto; padding: 20px 10px; text-align: center;">
+  <div id="zf_div_JIemBrsTTxF4LMTpTYFKZRkkrdRG7Ui-zfi6YpoM3Bo" style="position: relative; min-height: 800px; background: #f9f9f9; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+    <!-- Loader optionnel pendant chargement -->
+    <div id="zf_loader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; color: #666;">
+      Chargement du formulaire...
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+(function() {
+  try {
+    var f = document.createElement("iframe");
+    
+    var ifrmSrc = 'https://forms.zohopublic.ca/printpress1/form/Demandedesoumission/formperma/JIemBrsTTxF4LMTpTYFKZRkkrdRG7Ui-zfi6YpoM3Bo?zf_rszfm=1&zf_enablecamera=true';
+    
+    // Ajout UTM si présent (ton code original)
+    try {
+      if (typeof ZFAdvLead != "undefined" && typeof zfutm_zfAdvLead != "undefined") {
+        for (var prmIdx = 0; prmIdx < ZFAdvLead.utmPNameArr.length; prmIdx++) {
+          var utmPm = ZFAdvLead.utmPNameArr[prmIdx];
+          utmPm = (ZFAdvLead.isSameDomian && (ZFAdvLead.utmcustPNameArr.indexOf(utmPm) == -1)) ? "zf_" + utmPm : utmPm;
+          var utmVal = zfutm_zfAdvLead.zfautm_gC_enc(ZFAdvLead.utmPNameArr[prmIdx]);
+          if (utmVal && utmVal != "") {
+            ifrmSrc += (ifrmSrc.indexOf('?') > 0 ? '&' : '?') + utmPm + '=' + utmVal;
+          }
+        }
+      }
+      // Même chose pour ZFLead si besoin (ton code)
+      if (typeof ZFLead != "undefined" && typeof zfutm_zfLead != "undefined") {
+        for (var prmIdx = 0; prmIdx < ZFLead.utmPNameArr.length; prmIdx++) {
+          var utmPm = ZFLead.utmPNameArr[prmIdx];
+          var utmVal = zfutm_zfLead.zfutm_gC_enc(ZFLead.utmPNameArr[prmIdx]);
+          if (utmVal && utmVal != "") {
+            ifrmSrc += (ifrmSrc.indexOf('?') > 0 ? '&' : '?') + utmPm + '=' + utmVal;
+          }
+        }
+      }
+    } catch(e) {}
+
+    f.src = ifrmSrc;
+    f.style.border = "none";
+    f.style.width = "100%";
+    f.style.height = "800px"; // Hauteur initiale fallback (évite espace vide)
+    f.style.transition = "height 0.5s ease";
+    f.setAttribute("aria-label", "Demande de soumission rapide");
+    f.setAttribute("allow", "camera;");
+
+    var d = document.getElementById("zf_div_JIemBrsTTxF4LMTpTYFKZRkkrdRG7Ui-zfi6YpoM3Bo");
+    d.appendChild(f);
+
+    // Masquer loader quand iframe chargé
+    f.onload = function() {
+      var loader = document.getElementById("zf_loader");
+      if (loader) loader.style.display = "none";
+    };
+
+    // Script d'ajustement hauteur (ton code amélioré)
+    window.addEventListener('message', function(event) {
+      var evntData = event.data;
+      if (evntData && typeof evntData === 'string') {
+        var zf_ifrm_data = evntData.split("|");
+        if (zf_ifrm_data.length >= 2) {
+          var zf_perma = zf_ifrm_data[0];
+          var zf_ifrm_ht_nw = (parseInt(zf_ifrm_data[1], 10) + 20) + "px"; // +20px marge
+
+          var iframe = d.getElementsByTagName("iframe")[0];
+          if (iframe.src.indexOf('formperma') > -1 && iframe.src.indexOf(zf_perma) > -1) {
+            if (iframe.style.height !== zf_ifrm_ht_nw) {
+              setTimeout(function() {
+                iframe.style.height = zf_ifrm_ht_nw;
+              }, 100); // Petit délai pour smooth
+            }
+          }
+        }
+      }
+    }, false);
+
+  } catch(e) {
+    console.error("Erreur embed Zoho:", e);
+  }
+})();
+</script>
+
+<!-- CSS additionnel (colle ça dans ton fichier theme.liquid ou dans Custom CSS de la page) -->
+<style>
+  @media (max-width: 768px) {
+    #zf_div_JIemBrsTTxF4LMTpTYFKZRkkrdRG7Ui-zfi6YpoM3Bo {
+      min-height: 1200px !important; /* Plus de hauteur mini sur mobile si besoin */
+    }
+  }
+</style>
