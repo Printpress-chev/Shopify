@@ -1,0 +1,1251 @@
+{%- assign cat = collections[section.settings.collection_handle] -%}
+{%- if cat == blank -%}{%- assign cat = collections.all -%}{%- endif -%}
+
+{%- paginate cat.products by 250 -%}
+
+<!-- ═══════════════════════════════════════════
+     ÉTAPE 1 — Quantité
+════════════════════════════════════════════ -->
+<div class="qo-step1">
+  <div class="qo-step1__inner">
+    <p class="qo-step__label">
+      <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+      </svg>
+      ÉTAPE 1 :
+    </p>
+    <div class="qo-step1__line">
+      <span>J'AIMERAIS COMMANDER</span>
+      <input
+        class="qo-step1__qty"
+        id="qo-hero-qty"
+        type="number"
+        value="{{ section.settings.min_qty }}"
+        min="{{ section.settings.min_qty }}"
+        step="1"
+        aria-label="Nombre de vêtements"
+      >
+      <span>VÊTEMENTS</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ÉTAPE 2 — Type de vêtement
+════════════════════════════════════════════ -->
+<div class="qo-step2" id="qo-step2">
+  <div class="qo-step2__inner">
+    <p class="qo-step__label qo-step__label--light">
+      <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+      </svg>
+      ÉTAPE 2 : CHOISISSEZ VOTRE <strong>TYPE DE VÊTEMENT</strong>
+    </p>
+    <!-- Built dynamically by JS from product types in catalog -->
+    <div class="qo-types" id="qo-types"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ÉTAPE 3 — Sélectionner le produit
+════════════════════════════════════════════ -->
+<div class="qo-step3" id="qo-step3">
+  <div class="qo-step3__header">
+    <p class="qo-step__label qo-step__label--dark">
+      <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+      </svg>
+      ÉTAPE 3 : CHOISISSEZ VOTRE <strong>PRODUIT</strong>
+    </p>
+
+    <!-- Secondary filters (color, size, print) -->
+    <div class="qo-cat__toolbar" id="qo-toolbar">
+      <div class="qo-cat__selects">
+        <select class="qo-cat__select" id="qo-filter-type"  data-filter="type" style="display:none">
+          <option value="">Catégorie</option>
+        </select>
+        <select class="qo-cat__select" id="qo-filter-color" data-filter="colors">
+          <option value="">Couleur</option>
+        </select>
+        <select class="qo-cat__select" id="qo-filter-size"  data-filter="sizes">
+          <option value="">Taille</option>
+        </select>
+        <select class="qo-cat__select" id="qo-filter-print" data-filter="print">
+          <option value="">Impression</option>
+        </select>
+        <button class="qo-cat__reset" id="qo-reset" type="button">Réinitialiser</button>
+      </div>
+      <span class="qo-cat__count" id="qo-count"></span>
+    </div>
+  </div>
+
+  <!-- Product grid -->
+  <div class="qo-cat__grid" id="qo-grid">
+
+    {%- for product in cat.products -%}
+
+      {%- assign p_colors = '' -%}
+      {%- assign p_sizes  = '' -%}
+      {%- assign p_print  = '' -%}
+
+      {%- for option in product.options_with_values -%}
+        {%- assign opt_lower = option.name | downcase -%}
+        {%- if opt_lower == 'couleur' or opt_lower == 'color' or opt_lower == 'colour' -%}
+          {%- assign p_colors = option.values | join: '|||' -%}
+        {%- endif -%}
+        {%- if opt_lower == 'taille' or opt_lower == 'size' -%}
+          {%- assign p_sizes = option.values | join: '|||' -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- for tag in product.tags -%}
+        {%- if tag contains 'print_' -%}
+          {%- assign p_print = p_print | append: tag | append: '|||' -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      <div class="qo-cat__card"
+        data-type="{{ product.type | downcase | handleize }}"
+        data-type-raw="{{ product.type | escape }}"
+        data-colors="{{ p_colors | downcase }}"
+        data-sizes="{{ p_sizes }}"
+        data-print="{{ p_print | downcase }}"
+        data-product="{{ product.id }}"
+        data-handle="{{ product.handle }}"
+      >
+        <div class="qo-cat__card-img">
+          {%- if product.featured_image -%}
+            <img
+              src="{{ product.featured_image | image_url: width: 480 }}"
+              alt="{{ product.title | escape }}"
+              loading="lazy"
+            >
+          {%- else -%}
+            <div class="qo-cat__no-img">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="4" y="8" width="40" height="32" rx="4"/>
+                <path d="M4 30l10-10 8 8 6-6 16 12"/>
+                <circle cx="34" cy="18" r="4"/>
+              </svg>
+            </div>
+          {%- endif -%}
+          {%- if p_print != '' -%}
+            {%- assign first_print = p_print | split: '|||' | first -%}
+            <span class="qo-cat__badge">{{ first_print | replace: 'print_', '' | upcase }}</span>
+          {%- endif -%}
+        </div>
+
+        <div class="qo-cat__card-info">
+          {%- if product.type != blank -%}
+            <p class="qo-cat__card-type">{{ product.type }}</p>
+          {%- endif -%}
+          <h3 class="qo-cat__card-name">{{ product.title }}</h3>
+          <p class="qo-cat__card-price">
+            {%- if product.price_min != product.price_max -%}
+              À partir de {{ product.price_min | money }}
+            {%- else -%}
+              {{ product.price_min | money }}
+            {%- endif -%}
+            <span class="qo-cat__per"> / pièce</span>
+          </p>
+          {%- if p_colors != '' -%}
+            <p class="qo-cat__color-count">
+              {%- assign color_count = p_colors | split: '|||' | size -%}
+              {{ color_count }} couleur{% if color_count > 1 %}s{% endif %}
+            </p>
+          {%- endif -%}
+          <button class="qo-cat__card-btn" data-open="{{ product.id }}" type="button">
+            Sélectionner
+          </button>
+        </div>
+
+        <script type="application/json" class="qo-product-data">
+          {
+            "id": {{ product.id }},
+            "title": {{ product.title | json }},
+            "type": {{ product.type | json }},
+            "handle": {{ product.handle | json }},
+            "price_min": {{ product.price_min }},
+            "price_max": {{ product.price_max }},
+            "images": [
+              {%- for img in product.images limit: 4 -%}
+                {{ img | image_url: width: 700 | json }}{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ],
+            "options": [
+              {%- for option in product.options_with_values -%}
+                { "name": {{ option.name | json }}, "values": {{ option.values | json }} }
+                {% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ],
+            "variants": [
+              {%- for variant in product.variants -%}
+                {
+                  "id": {{ variant.id }},
+                  "title": {{ variant.title | json }},
+                  "available": {{ variant.available }},
+                  "option1": {{ variant.option1 | json }},
+                  "option2": {{ variant.option2 | json }},
+                  "option3": {{ variant.option3 | json }},
+                  "price": {{ variant.price }}
+                }{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ]
+          }
+        </script>
+
+      </div><!-- /.qo-cat__card -->
+
+    {%- else -%}
+      <p class="qo-cat__empty">Aucun produit disponible.</p>
+    {%- endfor -%}
+
+  </div><!-- /.qo-cat__grid -->
+</div><!-- /.qo-step3 -->
+
+{%- endpaginate -%}
+
+<!-- Backdrop -->
+<div class="qo-backdrop" id="qo-backdrop"></div>
+
+<!-- Modal -->
+<div class="qo-modal" id="qo-modal" role="dialog" aria-modal="true">
+  <button class="qo-modal__close" id="qo-modal-close" aria-label="Fermer" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  </button>
+  <div class="qo-modal__body" id="qo-modal-body"></div>
+</div>
+
+<script>
+  window.qoCatConfig = {
+    minQty: {{ section.settings.min_qty }},
+    moneyFormat: {{ shop.money_format | json }},
+    currency: {{ shop.currency | json }}
+  };
+</script>
+
+{% stylesheet %}
+
+/* ══════════════════════════════════════════
+   STEP 1 — Quantity
+══════════════════════════════════════════ */
+.qo-step1 {
+  background: #1a1a1a;
+  padding: 48px 24px;
+}
+
+.qo-step1__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.qo-step__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #FF6500;
+  margin: 0 0 20px;
+}
+
+.qo-step__label--light { color: rgba(255,255,255,0.5); }
+.qo-step__label--dark  { color: #888; }
+.qo-step__label strong { color: inherit; font-weight: 900; }
+
+.qo-step__icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.qo-step1__line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.qo-step1__qty {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid #FF6500;
+  color: #FF6500;
+  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  font-weight: 900;
+  width: 120px;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.qo-step1__qty::-webkit-outer-spin-button,
+.qo-step1__qty::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+/* ══════════════════════════════════════════
+   STEP 2 — Garment type
+══════════════════════════════════════════ */
+.qo-step2 {
+  background: #111;
+  padding: 40px 24px 48px;
+  border-top: 1px solid #222;
+}
+
+.qo-step2__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Arrow connector between steps */
+.qo-step1::after,
+.qo-step2::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 28px solid transparent;
+  border-right: 28px solid transparent;
+  margin: 0 auto;
+}
+
+.qo-step1::after {
+  border-top: 22px solid #1a1a1a;
+  margin-top: 0;
+}
+
+.qo-step2::after {
+  border-top: 22px solid #111;
+}
+
+/* Garment type icons */
+.qo-types {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.qo-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 16px 16px;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 88px;
+}
+
+.qo-type-btn:hover {
+  border-color: rgba(255,255,255,0.4);
+  color: #fff;
+}
+
+.qo-type-btn.is-active {
+  border-color: #FF6500;
+  color: #FF6500;
+  background: rgba(255,101,0,0.08);
+}
+
+.qo-type-btn svg {
+  width: 52px;
+  height: 52px;
+}
+
+.qo-type-btn__label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════
+   STEP 3 — Product grid
+══════════════════════════════════════════ */
+.qo-step3 {
+  background: #f8f8f8;
+  min-height: 40vh;
+}
+
+.qo-step3__header {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  padding: 20px 24px 0;
+  max-width: 100%;
+}
+
+.qo-step3__header .qo-step__label {
+  max-width: 1100px;
+  margin: 0 auto 16px;
+}
+
+/* ══════════════════════════════════════════
+   Filter toolbar
+══════════════════════════════════════════ */
+.qo-cat__toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #fff;
+  padding: 12px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.qo-cat__selects {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.qo-cat__select {
+  appearance: none;
+  background: #f3f3f3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 32px 8px 12px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  min-width: 120px;
+}
+
+.qo-cat__select:focus { border-color: #FF6500; outline: none; }
+.qo-cat__select.is-active { border-color: #FF6500; color: #FF6500; background-color: #fff5ee; }
+
+.qo-cat__reset {
+  background: none;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qo-cat__reset:hover { border-color: #111; color: #111; }
+
+.qo-cat__count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #999;
+  white-space: nowrap;
+}
+
+/* ══════════════════════════════════════════
+   Product grid
+══════════════════════════════════════════ */
+.qo-cat__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px 64px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+
+  @media (max-width: 1100px) { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 749px)  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (max-width: 480px)  { grid-template-columns: 1fr; }
+}
+
+.qo-cat__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #999;
+  padding: 60px 0;
+}
+
+/* ══════════════════════════════════════════
+   Product card
+══════════════════════════════════════════ */
+.qo-cat__card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid #ebebeb;
+  transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+.qo-cat__card:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+  border-color: #FF6500;
+}
+
+.qo-cat__card-img {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f2f2f2;
+}
+
+.qo-cat__card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.qo-cat__card:hover .qo-cat__card-img img { transform: scale(1.05); }
+
+.qo-cat__no-img {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: #ccc;
+}
+
+.qo-cat__no-img svg { width: 48px; height: 48px; }
+
+.qo-cat__badge {
+  position: absolute;
+  top: 10px; left: 10px;
+  background: #111;
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.qo-cat__card-info {
+  padding: 14px 16px 16px;
+  display: flex; flex-direction: column; gap: 5px; flex: 1;
+}
+
+.qo-cat__card-type {
+  font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: #FF6500; margin: 0;
+}
+
+.qo-cat__card-name {
+  font-size: 0.92rem; font-weight: 700;
+  color: #111; margin: 0; line-height: 1.25;
+}
+
+.qo-cat__card-price {
+  font-size: 0.92rem; font-weight: 800;
+  color: #111; margin: 0;
+}
+
+.qo-cat__per { font-size: 0.72rem; font-weight: 500; color: #888; }
+
+.qo-cat__color-count { font-size: 0.75rem; color: #999; margin: 0; }
+
+.qo-cat__card-btn {
+  width: 100%;
+  padding: 10px;
+  background: #111; color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 0.8rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 10px;
+}
+
+.qo-cat__card-btn:hover { background: #FF6500; }
+
+/* ══════════════════════════════════════════
+   Backdrop + Modal
+══════════════════════════════════════════ */
+.qo-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.55);
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.qo-backdrop.is-open { opacity: 1; visibility: visible; }
+
+.qo-modal {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 300;
+  width: 500px; max-width: 100%;
+  background: #fff; overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+}
+
+.qo-modal.is-open { transform: translateX(0); }
+
+.qo-modal__close {
+  position: sticky; top: 0; float: right;
+  margin: 16px 16px 0 0; z-index: 10;
+  background: #f3f3f3; border: none; border-radius: 50%;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.2s;
+}
+
+.qo-modal__close:hover { background: #e0e0e0; }
+.qo-modal__close svg { width: 16px; height: 16px; }
+.qo-modal__body { padding: 16px 24px 48px; clear: both; }
+
+.qo-modal__img {
+  width: 100%; aspect-ratio: 1/1; object-fit: cover;
+  border-radius: 10px; margin-bottom: 20px; background: #f2f2f2;
+  display: block;
+}
+
+.qo-modal__type {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: #FF6500; margin: 0 0 4px;
+}
+
+.qo-modal__title {
+  font-size: 1.2rem; font-weight: 800; color: #111;
+  margin: 0 0 8px; line-height: 1.2;
+}
+
+.qo-modal__price {
+  font-size: 1.05rem; font-weight: 800; color: #111; margin: 0 0 20px;
+}
+
+.qo-modal__price span { font-size: 0.78rem; font-weight: 500; color: #888; }
+
+.qo-modal__divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
+
+.qo-modal__option-group { margin-bottom: 18px; }
+
+.qo-modal__option-label {
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: #555; margin: 0 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.qo-modal__option-selected {
+  font-size: 0.8rem; color: #555; font-style: italic; font-weight: 400;
+  text-transform: none; letter-spacing: 0;
+}
+
+.qo-modal__swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.qo-modal__swatch-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid #e0e0e0; cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.qo-modal__swatch-btn:hover { transform: scale(1.15); border-color: #aaa; }
+.qo-modal__swatch-btn.is-active { border-color: #FF6500; box-shadow: 0 0 0 2px #FF6500; }
+
+.qo-modal__sizes { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.qo-modal__size-btn {
+  padding: 7px 13px; border: 1.5px solid #ddd; border-radius: 7px;
+  background: #fff; font-size: 0.83rem; font-weight: 700; color: #333;
+  cursor: pointer; transition: all 0.15s;
+}
+
+.qo-modal__size-btn:hover { border-color: #111; }
+.qo-modal__size-btn.is-active { background: #111; border-color: #111; color: #fff; }
+.qo-modal__size-btn.is-unavailable { opacity: 0.35; text-decoration: line-through; cursor: not-allowed; }
+
+.qo-modal__qty-group { margin-bottom: 20px; }
+.qo-modal__qty-min { font-weight: 500; color: #FF6500; text-transform: none; letter-spacing: 0; font-size: 0.76rem; }
+
+.qo-modal__qty-wrap {
+  display: flex; align-items: center;
+  border: 1.5px solid #ddd; border-radius: 10px;
+  overflow: hidden; width: fit-content;
+}
+
+.qo-modal__qty-btn {
+  background: #f5f5f5; border: none;
+  width: 44px; height: 44px;
+  font-size: 1.2rem; font-weight: 700; color: #333;
+  cursor: pointer; transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.qo-modal__qty-btn:hover { background: #e8e8e8; }
+
+.qo-modal__qty-input {
+  width: 64px; border: none;
+  border-left: 1.5px solid #ddd; border-right: 1.5px solid #ddd;
+  text-align: center; font-size: 1rem; font-weight: 700; color: #111;
+  height: 44px; outline: none; -moz-appearance: textfield;
+}
+
+.qo-modal__qty-input::-webkit-outer-spin-button,
+.qo-modal__qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.qo-modal__atc {
+  width: 100%; padding: 16px;
+  background: #FF6500; color: #fff; border: none; border-radius: 10px;
+  font-size: 0.9rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  cursor: pointer; transition: background 0.2s, transform 0.15s;
+}
+
+.qo-modal__atc:hover:not(:disabled) { background: #e05800; transform: translateY(-1px); }
+.qo-modal__atc:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+.qo-modal__feedback { margin: 12px 0 0; font-size: 0.83rem; font-weight: 600; text-align: center; }
+.qo-modal__feedback--success { color: #16a34a; }
+.qo-modal__feedback--error   { color: #dc2626; }
+
+body.qo-modal-open { overflow: hidden; }
+
+/* Responsive */
+@media (max-width: 749px) {
+  .qo-step1__line { font-size: clamp(1.1rem, 5vw, 1.5rem); gap: 10px; }
+  .qo-step1__qty  { width: 80px; font-size: clamp(1.4rem, 6vw, 2rem); }
+  .qo-type-btn    { min-width: 72px; padding: 14px 10px 12px; }
+  .qo-type-btn svg { width: 40px; height: 40px; }
+  .qo-cat__toolbar { position: static; }
+}
+
+@media (max-width: 600px) {
+  .qo-modal { top: auto; height: 92dvh; width: 100%; border-radius: 16px 16px 0 0; transform: translateY(100%); }
+  .qo-modal.is-open { transform: translateY(0); }
+}
+
+{% endstylesheet %}
+
+<script>
+(function () {
+  const MIN_QTY = window.qoCatConfig.minQty;
+
+  /* ── SVG icon library (line-art clothing icons) ───── */
+  const ICONS = {
+    tshirt: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M35 12 Q50 6 65 12 L90 30 L76 40 L76 88 L24 88 L24 40 L10 30 Z"/>
+      <path d="M35 12 Q43 22 50 22 Q57 22 65 12"/>
+    </svg>`,
+
+    longsleeve: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M35 12 Q50 6 65 12 L94 58 L78 64 L78 88 L22 88 L22 64 L6 58 Z"/>
+      <path d="M35 12 Q43 22 50 22 Q57 22 65 12"/>
+    </svg>`,
+
+    hoodie: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M30 16 Q20 8 8 28 L4 44 L20 50 L20 88 L80 88 L80 50 L96 44 L92 28 Q80 8 70 16 Q60 4 50 8 Q40 4 30 16 Z"/>
+      <path d="M30 16 Q50 28 70 16"/>
+      <line x1="50" y1="28" x2="50" y2="88"/>
+      <path d="M32 64 Q50 70 68 64"/>
+    </svg>`,
+
+    sweater: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M32 12 Q50 6 68 12 L92 32 L78 42 L78 88 L22 88 L22 42 L8 32 Z"/>
+      <path d="M32 12 Q40 24 50 24 Q60 24 68 12"/>
+      <line x1="22" y1="42" x2="78" y2="42"/>
+    </svg>`,
+
+    jacket: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M30 10 L10 30 L6 46 L22 52 L22 88 L78 88 L78 52 L94 46 L90 30 L70 10"/>
+      <path d="M30 10 L38 22 L50 16 L62 22 L70 10"/>
+      <line x1="50" y1="16" x2="50" y2="88"/>
+      <circle cx="42" cy="50" r="2" fill="currentColor"/>
+      <circle cx="42" cy="62" r="2" fill="currentColor"/>
+      <circle cx="42" cy="74" r="2" fill="currentColor"/>
+    </svg>`,
+
+    polo: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M35 12 L40 6 L50 20 L60 6 L65 12 L90 30 L76 40 L76 88 L24 88 L24 40 L10 30 Z"/>
+      <line x1="50" y1="20" x2="50" y2="36"/>
+    </svg>`,
+
+    bag: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="18" y="34" width="64" height="54" rx="4"/>
+      <path d="M34 34 Q34 14 50 14 Q66 14 66 34"/>
+      <line x1="18" y1="52" x2="82" y2="52"/>
+    </svg>`,
+
+    beanie: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 58 Q12 20 50 20 Q88 20 88 58 Z"/>
+      <rect x="8" y="58" width="84" height="14" rx="4"/>
+      <rect x="8" y="72" width="84" height="10" rx="3"/>
+      <circle cx="50" cy="20" r="8" fill="none"/>
+    </svg>`,
+
+    cap: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 56 Q20 24 50 24 Q80 24 80 56 L80 66 L20 66 Z"/>
+      <path d="M4 66 L80 66"/>
+      <path d="M50 24 L50 42"/>
+      <path d="M35 42 L65 42"/>
+    </svg>`,
+
+    default: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M35 12 Q50 6 65 12 L90 30 L76 40 L76 88 L24 88 L24 40 L10 30 Z"/>
+      <path d="M35 12 Q43 22 50 22 Q57 22 65 12"/>
+    </svg>`,
+  };
+
+  const ICON_KEYWORDS = {
+    tshirt:     ['t-shirt','tshirt','tee','t shirt'],
+    longsleeve: ['long sleeve','manche longue','longsleeve','long-sleeve'],
+    hoodie:     ['hoodie','hoody','sweat à capuche','capuche','zip hoodie'],
+    sweater:    ['sweater','sweatshirt','pull','crewneck','crew neck'],
+    jacket:     ['jacket','veste','veston','manteau','coat'],
+    polo:       ['polo'],
+    bag:        ['bag','sac','tote'],
+    beanie:     ['beanie','bonnet','tuque'],
+    cap:        ['cap','casquette','hat','chapeau'],
+  };
+
+  function getIcon(typeName) {
+    const lower = typeName.toLowerCase();
+    for (const [key, keywords] of Object.entries(ICON_KEYWORDS)) {
+      if (keywords.some(kw => lower.includes(kw))) return ICONS[key];
+    }
+    return ICONS.default;
+  }
+
+  /* ── Color map ─────────────────────────────────── */
+  const COLOR_MAP = {
+    'blanc':'#f5f5f5','white':'#f5f5f5','noir':'#111','black':'#111',
+    'rouge':'#e53e3e','red':'#e53e3e','bleu':'#3b82f6','blue':'#3b82f6',
+    'bleu ciel':'#87ceeb','sky blue':'#87ceeb','bleu marine':'#1a365d',
+    'marine':'#1a365d','navy':'#1a365d','vert':'#16a34a','green':'#16a34a',
+    'jaune':'#ecc94b','yellow':'#ecc94b','orange':'#FF6500',
+    'gris':'#9ca3af','grey':'#9ca3af','gray':'#9ca3af',
+    'gris chiné':'#c4c4c4','heather grey':'#c4c4c4','rose':'#f472b6','pink':'#f472b6',
+    'violet':'#7c3aed','purple':'#7c3aed','marron':'#92400e','brown':'#92400e',
+    'beige':'#f5f0e1','kaki':'#8b7355','khaki':'#8b7355','bordeaux':'#9b1c1c',
+    'burgundy':'#9b1c1c','turquoise':'#0d9488','corail':'#fb7185','coral':'#fb7185',
+    'écru':'#f5f0e1','ecru':'#f5f0e1','anthracite':'#3d3d3d',
+    'caramel':'#d97706','lavande':'#a78bfa','lavender':'#a78bfa',
+  };
+
+  function getColor(name) {
+    return COLOR_MAP[name.toLowerCase().trim()] || name.toLowerCase().trim();
+  }
+
+  /* ── Size order ─────────────────────────────────── */
+  const SIZE_ORDER = ['xxs','xs','s','m','l','xl','xxl','2xl','3xl','4xl','5xl','one size','taille unique','tu'];
+  function sortSizes(arr) {
+    return [...arr].sort((a, b) => {
+      const ai = SIZE_ORDER.indexOf(a.toLowerCase()), bi = SIZE_ORDER.indexOf(b.toLowerCase());
+      if (ai === -1 && bi === -1) return a.localeCompare(b);
+      if (ai === -1) return 1; if (bi === -1) return -1;
+      return ai - bi;
+    });
+  }
+
+  /* ── Money format ───────────────────────────────── */
+  function formatMoney(cents) {
+    const amount = (cents / 100).toFixed(2);
+    return window.qoCatConfig.moneyFormat
+      .replace(/\{\{\s*amount\s*\}\}/g, amount)
+      .replace(/\{\{\s*amount_no_decimals\s*\}\}/g, Math.round(cents / 100))
+      .replace(/\{\{\s*amount_with_comma_separator\s*\}\}/g, amount.replace('.', ','));
+  }
+
+  /* ── DOM refs ───────────────────────────────────── */
+  const grid      = document.getElementById('qo-grid');
+  const cards     = Array.from(grid.querySelectorAll('.qo-cat__card'));
+  const countEl   = document.getElementById('qo-count');
+  const heroQty   = document.getElementById('qo-hero-qty');
+  const typesEl   = document.getElementById('qo-types');
+  const selects   = document.querySelectorAll('.qo-cat__select');
+
+  /* ── Collect unique filter values ───────────────── */
+  const typeMap  = new Map(); // handleized → raw label
+  const colorSet = new Set();
+  const sizeSet  = new Set();
+  const printSet = new Set();
+
+  cards.forEach(card => {
+    const t = card.dataset.type, tr = card.dataset.typeRaw;
+    if (t && tr) typeMap.set(t, tr);
+    card.dataset.colors.split('|||').filter(Boolean).forEach(c => colorSet.add(c.trim()));
+    card.dataset.sizes.split('|||').filter(Boolean).forEach(s => sizeSet.add(s.trim()));
+    card.dataset.print.split('|||').filter(Boolean).forEach(p => printSet.add(p.trim()));
+  });
+
+  /* ── Build Step 2 type icons ────────────────────── */
+  typeMap.forEach((rawLabel, handleized) => {
+    const btn = document.createElement('button');
+    btn.className = 'qo-type-btn';
+    btn.dataset.type = handleized;
+    btn.type = 'button';
+    btn.innerHTML = `${getIcon(rawLabel)}<span class="qo-type-btn__label">${rawLabel}</span>`;
+    btn.addEventListener('click', () => selectType(handleized, btn));
+    typesEl.appendChild(btn);
+  });
+
+  let activeType = '';
+
+  function selectType(handleized, btn) {
+    if (activeType === handleized) {
+      // Deselect → show all
+      activeType = '';
+      typesEl.querySelectorAll('.qo-type-btn').forEach(b => b.classList.remove('is-active'));
+    } else {
+      activeType = handleized;
+      typesEl.querySelectorAll('.qo-type-btn').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+    }
+
+    // Sync hidden category select
+    const typeSelect = document.getElementById('qo-filter-type');
+    typeSelect.value = activeType;
+
+    applyFilters();
+
+    // Smooth scroll to grid
+    document.getElementById('qo-step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ── Populate secondary filter selects ─────────── */
+  function addOptions(selectId, values, labelFn) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+    values.forEach(val => {
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = labelFn ? labelFn(val) : val;
+      sel.appendChild(opt);
+    });
+  }
+
+  // Populate category select (hidden, driven by Step 2 icons)
+  typeMap.forEach((rawLabel, handleized) => {
+    const typeSelect = document.getElementById('qo-filter-type');
+    const opt = document.createElement('option');
+    opt.value = handleized; opt.textContent = rawLabel;
+    typeSelect.appendChild(opt);
+  });
+
+  addOptions('qo-filter-color', [...colorSet].sort(), v => v.charAt(0).toUpperCase() + v.slice(1));
+  addOptions('qo-filter-size',  sortSizes([...sizeSet]));
+  addOptions('qo-filter-print', [...printSet].sort(), v => v.replace('print_', '').toUpperCase());
+
+  /* ── Filter logic ───────────────────────────────── */
+  function applyFilters() {
+    const active = {};
+    selects.forEach(s => { if (s.value) active[s.dataset.filter] = s.value; });
+
+    let visible = 0;
+    cards.forEach(card => {
+      let show = true;
+      for (const [filter, value] of Object.entries(active)) {
+        if (filter === 'type') {
+          if (card.dataset.type !== value) { show = false; break; }
+        } else {
+          const vals = card.dataset[filter].split('|||').map(v => v.trim().toLowerCase());
+          if (!vals.includes(value.toLowerCase())) { show = false; break; }
+        }
+      }
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    countEl.textContent = `${visible} produit${visible !== 1 ? 's' : ''}`;
+    selects.forEach(s => s.classList.toggle('is-active', !!s.value));
+  }
+
+  selects.forEach(s => s.addEventListener('change', applyFilters));
+
+  document.getElementById('qo-reset').addEventListener('click', () => {
+    selects.forEach(s => { s.value = ''; s.classList.remove('is-active'); });
+    activeType = '';
+    typesEl.querySelectorAll('.qo-type-btn').forEach(b => b.classList.remove('is-active'));
+    applyFilters();
+  });
+
+  applyFilters();
+
+  /* ── Modal ──────────────────────────────────────── */
+  const modal     = document.getElementById('qo-modal');
+  const backdrop  = document.getElementById('qo-backdrop');
+  const closeBtn  = document.getElementById('qo-modal-close');
+  const modalBody = document.getElementById('qo-modal-body');
+
+  let currentProduct  = null;
+  let selectedOptions = {};
+
+  function openModal(productId) {
+    const card   = grid.querySelector(`[data-product="${productId}"]`);
+    const dataEl = card.querySelector('.qo-product-data');
+    currentProduct  = JSON.parse(dataEl.textContent);
+    selectedOptions = {};
+    renderModal();
+    modal.classList.add('is-open');
+    backdrop.classList.add('is-open');
+    document.body.classList.add('qo-modal-open');
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    document.body.classList.remove('qo-modal-open');
+  }
+
+  function renderModal() {
+    const p    = currentProduct;
+    const img  = p.images[0] || '';
+    const qty  = parseInt(heroQty.value) || MIN_QTY;
+
+    const colorOption  = p.options.find(o => ['couleur','color','colour'].includes(o.name.toLowerCase()));
+    const sizeOption   = p.options.find(o => ['taille','size'].includes(o.name.toLowerCase()));
+    const otherOptions = p.options.filter(o => o !== colorOption && o !== sizeOption);
+
+    const priceHtml = p.price_min !== p.price_max
+      ? `À partir de ${formatMoney(p.price_min)}`
+      : formatMoney(p.price_min);
+
+    let html = `
+      ${img ? `<img class="qo-modal__img" src="${img}" alt="${p.title}" id="qo-modal-img">` : ''}
+      ${p.type ? `<p class="qo-modal__type">${p.type}</p>` : ''}
+      <h2 class="qo-modal__title">${p.title}</h2>
+      <p class="qo-modal__price" id="qo-modal-price">${priceHtml} <span>/ pièce</span></p>
+      <hr class="qo-modal__divider">
+    `;
+
+    if (colorOption) {
+      html += `
+        <div class="qo-modal__option-group">
+          <p class="qo-modal__option-label">
+            ${colorOption.name}
+            <span class="qo-modal__option-selected" id="qo-color-label"></span>
+          </p>
+          <div class="qo-modal__swatches" id="qo-opt-${colorOption.name}">
+            ${colorOption.values.map(val => {
+              const bg = getColor(val);
+              const isLight = ['blanc','white','écru','ecru','beige','sable','sand'].some(w => val.toLowerCase().includes(w));
+              return `<button
+                class="qo-modal__swatch-btn"
+                data-option="${colorOption.name}"
+                data-value="${val}"
+                style="background:${bg}${isLight ? ';border-color:#ccc' : ''}"
+                title="${val}"
+                type="button"
+              ></button>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    if (sizeOption) {
+      html += `
+        <div class="qo-modal__option-group">
+          <p class="qo-modal__option-label">${sizeOption.name}</p>
+          <div class="qo-modal__sizes">
+            ${sortSizes(sizeOption.values).map(val => `
+              <button class="qo-modal__size-btn" data-option="${sizeOption.name}" data-value="${val}" type="button">${val}</button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    otherOptions.forEach(option => {
+      html += `
+        <div class="qo-modal__option-group">
+          <p class="qo-modal__option-label">${option.name}</p>
+          <div class="qo-modal__sizes">
+            ${option.values.map(val => `
+              <button class="qo-modal__size-btn" data-option="${option.name}" data-value="${val}" type="button">${val}</button>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+      <hr class="qo-modal__divider">
+      <div class="qo-modal__qty-group">
+        <p class="qo-modal__option-label">
+          Quantité <span class="qo-modal__qty-min">(min. ${MIN_QTY} pièces)</span>
+        </p>
+        <div class="qo-modal__qty-wrap">
+          <button class="qo-modal__qty-btn" id="qo-qty-dec" type="button">−</button>
+          <input class="qo-modal__qty-input" id="qo-qty-input" type="number" value="${Math.max(qty, MIN_QTY)}" min="${MIN_QTY}" step="1">
+          <button class="qo-modal__qty-btn" id="qo-qty-inc" type="button">+</button>
+        </div>
+      </div>
+      <button class="qo-modal__atc" id="qo-atc" type="button">Ajouter au panier</button>
+      <p class="qo-modal__feedback" id="qo-feedback"></p>
+    `;
+
+    modalBody.innerHTML = html;
+    modal.scrollTop = 0;
+
+    /* Option events */
+    modalBody.querySelectorAll('[data-option]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const optName = btn.dataset.option;
+        const val     = btn.dataset.value;
+        selectedOptions[optName] = val;
+
+        const group = btn.closest('.qo-modal__swatches, .qo-modal__sizes');
+        group.querySelectorAll('[data-option]').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+
+        if (['couleur','color','colour'].includes(optName.toLowerCase())) {
+          const lbl = document.getElementById('qo-color-label');
+          if (lbl) lbl.textContent = val;
+        }
+
+        updateVariantState();
+      });
+    });
+
+    /* Quantity */
+    const qtyInput = document.getElementById('qo-qty-input');
+    document.getElementById('qo-qty-dec').addEventListener('click', () => {
+      qtyInput.value = Math.max(MIN_QTY, parseInt(qtyInput.value) - 1);
+    });
+    document.getElementById('qo-qty-inc').addEventListener('click', () => {
+      qtyInput.value = parseInt(qtyInput.value) + 1;
+    });
+    qtyInput.addEventListener('change', () => {
+      if (parseInt(qtyInput.value) < MIN_QTY) qtyInput.value = MIN_QTY;
+    });
+
+    document.getElementById('qo-atc').addEventListener('click', addToCart);
+  }
+
+  function findVariant() {
+    if (!currentProduct) return null;
+    return currentProduct.variants.find(v =>
+      currentProduct.options.every((opt, i) => {
+        const sel = selectedOptions[opt.name];
+        if (!sel) return true;
+        return (v[`option${i + 1}`] || '').toLowerCase() === sel.toLowerCase();
+      })
+    );
+  }
+
+  function updateVariantState() {
+    const variant    = findVariant();
+    const atcBtn     = document.getElementById('qo-atc');
+    if (!atcBtn) return;
+    const allSelected = currentProduct.options.every(opt => selectedOptions[opt.name]);
+
+    if (!allSelected || !variant) {
+      atcBtn.disabled = false;
+      atcBtn.textContent = 'Ajouter au panier';
+    } else if (!variant.available) {
+      atcBtn.disabled = true;
+      atcBtn.textContent = 'Rupture de stock';
+    } else {
+      atcBtn.disabled = false;
+      atcBtn.textContent = 'Ajouter au panier';
+    }
+  }
+
+  async function addToCart() {
+    const allSelected = currentProduct.options.every(opt => selectedOptions[opt.name]);
+    if (!allSelected) { showFeedback('Veuillez sélectionner toutes les options.', 'error'); return; }
+
+    const variant = findVariant();
+    if (!variant) { showFeedback("Cette combinaison n'est pas disponible.", 'error'); return; }
+
+    const qty = parseInt(document.getElementById('qo-qty-input').value);
+    if (qty < MIN_QTY) { showFeedback(`Minimum ${MIN_QTY} pièces requis.`, 'error'); return; }
+
+    const atcBtn = document.getElementById('qo-atc');
+    atcBtn.disabled = true;
+    atcBtn.textContent = 'Ajout en cours…';
+    document.getElementById('qo-feedback').textContent = '';
+
+    try {
+      const res = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: [{ id: variant.id, quantity: qty }] })
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.description || 'Erreur'); }
+
+      atcBtn.textContent = '✓ Ajouté !';
+      showFeedback('Produit ajouté au panier avec succès !', 'success');
+
+      // Update header cart count
+      fetch('/cart.js').then(r => r.json()).then(data => {
+        document.querySelectorAll('[data-cart-count], .qo-cart-count').forEach(el => {
+          el.textContent = data.item_count;
+        });
+      }).catch(() => {});
+
+      setTimeout(closeModal, 1400);
+    } catch (e) {
+      showFeedback(e.message || 'Une erreur est survenue.', 'error');
+      atcBtn.disabled = false;
+      atcBtn.textContent = 'Ajouter au panier';
+    }
+  }
+
+  function showFeedback(msg, type) {
+    const el = document.getElementById('qo-feedback');
+    if (!el) return;
+    el.textContent = msg;
+    el.className = `qo-modal__feedback qo-modal__feedback--${type}`;
+  }
+
+  /* ── Event listeners ────────────────────────────── */
+  grid.addEventListener('click', e => {
+    const btn = e.target.closest('[data-open]');
+    if (btn) openModal(btn.dataset.open);
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  /* Sync hero qty input with modal qty */
+  heroQty.addEventListener('change', () => {
+    if (parseInt(heroQty.value) < MIN_QTY) heroQty.value = MIN_QTY;
+  });
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "QO — Catalogue Rapide",
+  "settings": [
+    {
+      "type": "text",
+      "id": "collection_handle",
+      "label": "Handle de la collection",
+      "default": "all",
+      "info": "Laisse 'all' pour tous les produits, ou entre le handle d'une collection spécifique."
+    },
+    {
+      "type": "number",
+      "id": "min_qty",
+      "label": "Quantité minimum",
+      "default": 12
+    }
+  ],
+  "presets": [{ "name": "QO — Catalogue Rapide" }]
+}
+{% endschema %}

@@ -1,0 +1,60 @@
+<div class="qo-notice">
+  <div class="qo-notice__inner">
+    <span class="qo-notice__icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </span>
+    <p>{{ section.settings.text }}</p>
+  </div>
+</div>
+
+{% stylesheet %}
+  .qo-notice {
+    background: #FF6500;
+    padding: 20px 24px;
+  }
+
+  .qo-notice__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .qo-notice__icon {
+    width: 22px;
+    height: 22px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .qo-notice__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .qo-notice p {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "QO — Notice",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Message", "default": "À noter : nous avons un minimum de commande de 12 pièces par design." }
+  ],
+  "presets": [{ "name": "QO — Notice" }]
+}
+{% endschema %}

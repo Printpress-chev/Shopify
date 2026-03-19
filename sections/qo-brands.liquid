@@ -1,0 +1,168 @@
+<div class="qo-brands">
+  {%- if section.settings.label != blank -%}
+    <p class="qo-brands__label">{{ section.settings.label }}</p>
+  {%- endif -%}
+
+  <div class="qo-brands__track-wrap">
+    <div class="qo-brands__track">
+
+      {%- comment -%} First pass {%- endcomment -%}
+      {%- for i in (1..6) -%}
+        {%- assign img_key  = 'logo_' | append: i -%}
+        {%- assign name_key = 'name_' | append: i -%}
+        {%- if section.settings[img_key] != blank -%}
+          <div class="qo-brands__item">
+            <img
+              src="{{ section.settings[img_key] | image_url: width: 240 }}"
+              alt="{{ section.settings[name_key] }}"
+              loading="lazy"
+            >
+          </div>
+        {%- elsif section.settings[name_key] != blank -%}
+          <div class="qo-brands__item qo-brands__item--text">
+            {{ section.settings[name_key] }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- comment -%} Duplicate for seamless loop {%- endcomment -%}
+      {%- for i in (1..6) -%}
+        {%- assign img_key  = 'logo_' | append: i -%}
+        {%- assign name_key = 'name_' | append: i -%}
+        {%- if section.settings[img_key] != blank -%}
+          <div class="qo-brands__item" aria-hidden="true">
+            <img
+              src="{{ section.settings[img_key] | image_url: width: 240 }}"
+              alt=""
+              loading="lazy"
+            >
+          </div>
+        {%- elsif section.settings[name_key] != blank -%}
+          <div class="qo-brands__item qo-brands__item--text" aria-hidden="true">
+            {{ section.settings[name_key] }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .qo-brands {
+    background: #fff;
+    padding: 48px 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    overflow: hidden;
+  }
+
+  .qo-brands__label {
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #aaa;
+    margin: 0 0 28px;
+  }
+
+  /* ---- Scrolling track ---- */
+  .qo-brands__track-wrap {
+    overflow: hidden;
+    /* Soft fade edges */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      #000 10%,
+      #000 90%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      #000 10%,
+      #000 90%,
+      transparent 100%
+    );
+  }
+
+  .qo-brands__track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    animation: qo-scroll 28s linear infinite;
+  }
+
+  .qo-brands__track:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes qo-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ---- Item ---- */
+  .qo-brands__item {
+    flex-shrink: 0;
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .qo-brands__item img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    filter: grayscale(100%);
+    opacity: 0.45;
+    transition: opacity 0.25s ease, filter 0.25s ease;
+  }
+
+  .qo-brands__item img:hover {
+    filter: none;
+    opacity: 1;
+  }
+
+  .qo-brands__item--text {
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #ccc;
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .qo-brands__track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "QO — Marques clients",
+  "settings": [
+    { "type": "text", "id": "label", "label": "Titre", "default": "Ils nous font confiance" },
+    { "type": "image_picker", "id": "logo_1", "label": "Logo 1" },
+    { "type": "text", "id": "name_1", "label": "Nom 1 (si pas de logo)", "default": "Marque A" },
+    { "type": "image_picker", "id": "logo_2", "label": "Logo 2" },
+    { "type": "text", "id": "name_2", "label": "Nom 2 (si pas de logo)", "default": "Marque B" },
+    { "type": "image_picker", "id": "logo_3", "label": "Logo 3" },
+    { "type": "text", "id": "name_3", "label": "Nom 3 (si pas de logo)", "default": "Marque C" },
+    { "type": "image_picker", "id": "logo_4", "label": "Logo 4" },
+    { "type": "text", "id": "name_4", "label": "Nom 4 (si pas de logo)" },
+    { "type": "image_picker", "id": "logo_5", "label": "Logo 5" },
+    { "type": "text", "id": "name_5", "label": "Nom 5 (si pas de logo)" },
+    { "type": "image_picker", "id": "logo_6", "label": "Logo 6" },
+    { "type": "text", "id": "name_6", "label": "Nom 6 (si pas de logo)" }
+  ],
+  "presets": [{ "name": "QO — Marques clients" }]
+}
+{% endschema %}

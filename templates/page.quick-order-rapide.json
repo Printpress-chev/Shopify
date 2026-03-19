@@ -1,0 +1,12 @@
+{
+  "sections": {
+    "qo_catalogue": {
+      "type": "qo-catalogue",
+      "settings": {
+        "collection_handle": "all",
+        "min_qty": 12
+      }
+    }
+  },
+  "order": ["qo_catalogue"]
+}

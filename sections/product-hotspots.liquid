@@ -460,7 +460,10 @@
 {
   "name": "t:names.product_hotspots",
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   },
   "blocks": [
     {
@@ -685,44 +688,6 @@
       "default": 40
     }
   ],
-  "presets": [
-    {
-      "name": "t:names.product_hotspots",
-      "category": "t:categories.products",
-      "settings": {
-        "section_width": "page-width",
-        "color_scheme": "scheme-1",
-        "product_title_gap": 8,
-        "padding-block-start": 40,
-        "padding-block-end": 40
-      },
-      "blocks": {
-        "heading": {
-          "type": "text",
-          "name": "t:names.heading",
-          "static": true,
-          "settings": {
-            "text": "t:text_defaults.shop_the_look",
-            "type_preset": "h4"
-          }
-        },
-        "hotspot-1": {
-          "type": "_hotspot-product",
-          "settings": {
-            "x-position": 40,
-            "y-position": 40
-          }
-        },
-        "hotspot-2": {
-          "type": "_hotspot-product",
-          "settings": {
-            "x-position": 60,
-            "y-position": 60
-          }
-        }
-      },
-      "block_order": ["hotspot-1", "hotspot-2"]
-    }
-  ]
+  "presets": []
 }
 {% endschema %}

@@ -1,0 +1,263 @@
+<div class="qo-why">
+  <div class="qo-why__inner">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="qo-why__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="qo-why__grid">
+
+      {%- for i in (1..3) -%}
+        {%- assign img_key   = 'card' | append: i | append: '_image' -%}
+        {%- assign video_key = 'card' | append: i | append: '_video' -%}
+        {%- assign title_key = 'card' | append: i | append: '_title' -%}
+        {%- assign text_key  = 'card' | append: i | append: '_text' -%}
+
+        <div class="qo-why__card">
+
+          <!-- Média -->
+          {%- if section.settings[video_key] != blank -%}
+            <div class="qo-why__media">
+              <video
+                src="{{ section.settings[video_key] }}"
+                autoplay muted loop playsinline
+                class="qo-why__media-el"
+              ></video>
+            </div>
+          {%- elsif section.settings[img_key] != blank -%}
+            <div class="qo-why__media">
+              <img
+                src="{{ section.settings[img_key] | image_url: width: 800 }}"
+                alt="{{ section.settings[title_key] }}"
+                class="qo-why__media-el"
+                loading="lazy"
+              >
+            </div>
+          {%- else -%}
+            <!-- Icône par défaut si pas de média -->
+            <div class="qo-why__media qo-why__media--icon">
+              {%- if i == 1 -%}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4l4 12h13l-10 8 4 12-11-8-11 8 4-12L7 16h13z"/></svg>
+              {%- elsif i == 2 -%}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="16" r="8"/><path d="M8 40c0-8.8 7.2-16 16-16s16 7.2 16 16"/></svg>
+              {%- else -%}
+                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 24l10 10L42 14"/></svg>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          <!-- Texte -->
+          <div class="qo-why__card-body">
+            <h3 class="qo-why__card-title">{{ section.settings[title_key] }}</h3>
+            <p class="qo-why__card-text">{{ section.settings[text_key] }}</p>
+          </div>
+
+        </div>
+      {%- endfor -%}
+
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .qo-why {
+    background: #fff;
+    padding: 80px 24px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .qo-why__inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .qo-why__heading {
+    text-align: center;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #111;
+    margin: 0 0 48px;
+    letter-spacing: -0.01em;
+  }
+
+  .qo-why__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+
+    @media (max-width: 749px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---- Carte ---- */
+  .qo-why__card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fafafa;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .qo-why__card:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+    transform: translateY(-3px);
+  }
+
+  /* ---- Média ---- */
+  .qo-why__media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #111;
+    position: relative;
+  }
+
+  .qo-why__media-el {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .qo-why__card:hover .qo-why__media-el {
+    transform: scale(1.04);
+  }
+
+  /* Icône par défaut (pas de média) */
+  .qo-why__media--icon {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .qo-why__media--icon svg {
+    width: 56px;
+    height: 56px;
+    color: #FF6500;
+  }
+
+  /* ---- Texte ---- */
+  .qo-why__card-body {
+    padding: 24px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .qo-why__card-title {
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #111;
+    margin: 0;
+  }
+
+  .qo-why__card-text {
+    font-size: 0.92rem;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "QO — Pourquoi nous",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titre de la section",
+      "default": "Pourquoi choisir PrintPress ?"
+    },
+    {
+      "type": "header",
+      "content": "Carte 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "card1_image",
+      "label": "Photo"
+    },
+    {
+      "type": "text",
+      "id": "card1_video",
+      "label": "Vidéo — URL .mp4",
+      "info": "Colle l'URL depuis Shopify Fichiers. Priorité sur la photo si les deux sont remplis."
+    },
+    {
+      "type": "text",
+      "id": "card1_title",
+      "label": "Titre",
+      "default": "Qualité Primée"
+    },
+    {
+      "type": "textarea",
+      "id": "card1_text",
+      "label": "Description",
+      "default": "Impressions durables et vibrantes qui résistent aux lavages. Nos clients reviennent toujours."
+    },
+    {
+      "type": "header",
+      "content": "Carte 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "card2_image",
+      "label": "Photo"
+    },
+    {
+      "type": "text",
+      "id": "card2_video",
+      "label": "Vidéo — URL .mp4"
+    },
+    {
+      "type": "text",
+      "id": "card2_title",
+      "label": "Titre",
+      "default": "Service Personnalisé"
+    },
+    {
+      "type": "textarea",
+      "id": "card2_text",
+      "label": "Description",
+      "default": "Un interlocuteur dédié pour chaque commande. Nous vous accompagnons de A à Z."
+    },
+    {
+      "type": "header",
+      "content": "Carte 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "card3_image",
+      "label": "Photo"
+    },
+    {
+      "type": "text",
+      "id": "card3_video",
+      "label": "Vidéo — URL .mp4"
+    },
+    {
+      "type": "text",
+      "id": "card3_title",
+      "label": "Titre",
+      "default": "Commande Facile"
+    },
+    {
+      "type": "textarea",
+      "id": "card3_text",
+      "label": "Description",
+      "default": "Obtenez un devis en quelques clics. Livraison rapide dès 12 pièces."
+    }
+  ],
+  "presets": [{ "name": "QO — Pourquoi nous" }]
+}
+{% endschema %}

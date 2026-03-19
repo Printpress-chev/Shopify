@@ -1,0 +1,278 @@
+<div class="qo-hero" id="qo-hero-{{ section.id }}">
+
+  <!-- Vidéo de fond -->
+  <div class="qo-hero__media">
+    {%- if section.settings.video != blank -%}
+      <video
+        class="qo-hero__video"
+        src="{{ section.settings.video }}"
+        autoplay
+        muted
+        loop
+        playsinline
+      ></video>
+    {%- elsif section.settings.image != blank -%}
+      <img
+        class="qo-hero__image"
+        src="{{ section.settings.image | image_url: width: 2000 }}"
+        alt="{{ section.settings.title }}"
+        loading="eager"
+      >
+    {%- endif -%}
+    <div class="qo-hero__overlay"></div>
+  </div>
+
+  <!-- Contenu -->
+  <div class="qo-hero__content">
+    {%- if section.settings.eyebrow != blank -%}
+      <p class="qo-hero__eyebrow">{{ section.settings.eyebrow }}</p>
+    {%- endif -%}
+
+    <h1 class="qo-hero__title">{{ section.settings.title }}</h1>
+
+    <div class="qo-hero__btns">
+      <a href="{{ section.settings.btn1_link }}" class="qo-hero__btn qo-hero__btn--primary">
+        {{ section.settings.btn1_label }}
+      </a>
+      <a href="{{ section.settings.btn2_link }}" class="qo-hero__btn qo-hero__btn--secondary">
+        {{ section.settings.btn2_label }}
+      </a>
+    </div>
+  </div>
+
+</div>
+
+{% style %}
+  {{ section.settings.title_font | font_face: font_display: 'swap' }}
+
+  #qo-hero-{{ section.id }} .qo-hero__title {
+    font-family: {{ section.settings.title_font.family }}, sans-serif;
+    font-weight: {{ section.settings.title_font.weight }};
+    font-style: {{ section.settings.title_font.style }};
+    font-size: {{ section.settings.title_size }}px;
+  }
+
+  #qo-hero-{{ section.id }} .qo-hero__eyebrow {
+    font-size: {{ section.settings.eyebrow_size }}px;
+  }
+
+  @media (max-width: 749px) {
+    #qo-hero-{{ section.id }} .qo-hero__title {
+      font-size: {{ section.settings.title_size | times: 0.6 | round }}px;
+    }
+  }
+{% endstyle %}
+
+{% stylesheet %}
+  .qo-hero {
+    position: relative;
+    width: 100%;
+    min-height: 85svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ---- Médias ---- */
+  .qo-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .qo-hero__video,
+  .qo-hero__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .qo-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.52);
+  }
+
+  /* ---- Contenu ---- */
+  .qo-hero__content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 48px 24px;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .qo-hero__eyebrow {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin: 0 0 20px;
+  }
+
+  .qo-hero__title {
+    color: #fff;
+    font-size: clamp(2.6rem, 7vw, 5.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin: 0 0 40px;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.4);
+  }
+
+  /* ---- Boutons ---- */
+  .qo-hero__btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .qo-hero__btn {
+    display: inline-block;
+    padding: 18px 40px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    border-radius: 100px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .qo-hero__btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+  }
+
+  .qo-hero__btn--primary {
+    background: #FF6500;
+    color: #fff;
+  }
+
+  .qo-hero__btn--secondary {
+    background: rgba(50, 50, 50, 0.85);
+    color: #fff;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  @media (max-width: 600px) {
+    .qo-hero__btn {
+      padding: 16px 28px;
+      font-size: 0.82rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "QO — Hero Vidéo",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Média de fond"
+    },
+    {
+      "type": "text",
+      "id": "video",
+      "label": "Vidéo de fond — URL .mp4",
+      "info": "Va dans Shopify Admin → Contenu → Fichiers, upload ta vidéo .mp4 et colle l'URL ici"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image de fond (si pas de vidéo)"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacité de l'overlay",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Texte"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Accroche (petite ligne au-dessus)",
+      "default": "Impression personnalisée • Vente en gros"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size",
+      "label": "Taille accroche (px)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre principal",
+      "default": "Impression qualité sur vêtements"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Police du titre",
+      "default": "helvetica_n7"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Taille du titre (px)",
+      "min": 32,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Bouton 1 — Commande Rapide"
+    },
+    {
+      "type": "text",
+      "id": "btn1_label",
+      "label": "Texte",
+      "default": "Commande Rapide"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Lien"
+    },
+    {
+      "type": "header",
+      "content": "Bouton 2 — Commande Personnalisée"
+    },
+    {
+      "type": "text",
+      "id": "btn2_label",
+      "label": "Texte",
+      "default": "Commande Personnalisée"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Lien"
+    }
+  ],
+  "presets": [{ "name": "QO — Hero Vidéo" }]
+}
+{% endschema %}

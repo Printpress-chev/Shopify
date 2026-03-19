@@ -1,0 +1,121 @@
+<div class="qo-quote color-{{ section.settings.color_scheme }}">
+  <div class="qo-quote__inner">
+    <div class="qo-quote__form">
+      <span class="qo-quote__label">{{ section.settings.prefix }}</span>
+      <input
+        class="qo-quote__input"
+        type="number"
+        id="qo-qty"
+        value="50"
+        min="12"
+        max="9999"
+        aria-label="Nombre de pièces"
+      >
+      <span class="qo-quote__label">{{ section.settings.suffix }}</span>
+    </div>
+    <a href="{{ section.settings.quote_link }}" class="qo-quote__btn" id="qo-quote-btn">
+      {{ section.settings.btn_label }}
+    </a>
+    <p class="qo-quote__note">{{ section.settings.note }}</p>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var btn = document.getElementById('qo-quote-btn');
+    var input = document.getElementById('qo-qty');
+    if (!btn || !input) return;
+    var base = btn.href;
+    input.addEventListener('input', function() {
+      var qty = encodeURIComponent(input.value);
+      btn.href = base + (base.includes('?') ? '&' : '?') + 'qty=' + qty;
+    });
+  })();
+</script>
+
+{% stylesheet %}
+  .qo-quote {
+    background: #111;
+    padding: 80px 24px;
+    text-align: center;
+  }
+
+  .qo-quote__inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .qo-quote__form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .qo-quote__label {
+    font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+
+  .qo-quote__input {
+    width: 110px;
+    font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    text-align: center;
+    background: transparent;
+    color: #FF6500;
+    border: none;
+    border-bottom: 3px solid #FF6500;
+    outline: none;
+    padding: 4px 8px;
+    -moz-appearance: textfield;
+  }
+
+  .qo-quote__input::-webkit-outer-spin-button,
+  .qo-quote__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  .qo-quote__btn {
+    display: inline-block;
+    background: #FF6500;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    padding: 18px 48px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  .qo-quote__btn:hover {
+    background: #e05a00;
+  }
+
+  .qo-quote__note {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 20px 0 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "QO — Générateur devis",
+  "settings": [
+    { "type": "text", "id": "prefix", "label": "Texte avant le nombre", "default": "J'ai besoin de" },
+    { "type": "text", "id": "suffix", "label": "Texte après le nombre", "default": "vêtements" },
+    { "type": "text", "id": "btn_label", "label": "Bouton — Texte", "default": "Obtenir mon devis" },
+    { "type": "url", "id": "quote_link", "label": "Bouton — Lien" },
+    { "type": "text", "id": "note", "label": "Note sous le bouton", "default": "Minimum 12 pièces par commande • Réponse sous 24h" }
+  ],
+  "presets": [{ "name": "QO — Générateur devis" }]
+}
+{% endschema %}
