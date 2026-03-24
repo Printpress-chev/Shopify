@@ -71,8 +71,11 @@
         <select class="qo-cat__select" id="qo-filter-size"  data-filter="sizes">
           <option value="">Taille</option>
         </select>
+        <select class="qo-cat__select" id="qo-filter-vendor" data-filter="vendor">
+          <option value="">Fournisseur</option>
+        </select>
         <select class="qo-cat__select" id="qo-filter-print" data-filter="print">
-          <option value="">Impression</option>
+          <option value="">Type d'impression</option>
         </select>
         <button class="qo-cat__reset" id="qo-reset" type="button">Réinitialiser</button>
       </div>
@@ -125,6 +128,7 @@
         data-colors="{{ p_colors | downcase }}"
         data-sizes="{{ p_sizes }}"
         data-print="{{ p_print | downcase }}"
+        data-vendor="{{ product.vendor | downcase | escape }}"
         data-product="{{ product.id }}"
         data-handle="{{ product.handle }}"
       >
@@ -1088,10 +1092,11 @@ body.qo-modal-open { overflow: hidden; }
   const selects   = document.querySelectorAll('.qo-cat__select');
 
   /* ── Collect unique filter values ───────────────── */
-  const typeMap  = new Map(); // handleized → raw label
-  const colorSet = new Set();
-  const sizeSet  = new Set();
-  const printSet = new Set();
+  const typeMap   = new Map(); // handleized → raw label
+  const colorSet  = new Set();
+  const sizeSet   = new Set();
+  const printSet  = new Set();
+  const vendorSet = new Set();
 
   cards.forEach(card => {
     const t = card.dataset.type, tr = card.dataset.typeRaw;
@@ -1099,6 +1104,7 @@ body.qo-modal-open { overflow: hidden; }
     card.dataset.colors.split('|||').filter(Boolean).forEach(c => colorSet.add(c.trim()));
     card.dataset.sizes.split('|||').filter(Boolean).forEach(s => sizeSet.add(s.trim()));
     card.dataset.print.split('|||').filter(Boolean).forEach(p => printSet.add(p.trim()));
+    if (card.dataset.vendor) vendorSet.add(card.dataset.vendor.trim());
   });
 
   /* ── Build Step 2 type icons ────────────────────── */
@@ -1172,6 +1178,13 @@ body.qo-modal-open { overflow: hidden; }
   addOptions('qo-filter-color', [...colorSet].sort(), titleCase);
   addOptions('qo-filter-size',  sortSizes([...sizeSet]));
 
+  // Vendor filter
+  if (vendorSet.size > 0) {
+    addOptions('qo-filter-vendor', [...vendorSet].sort(), titleCase);
+  } else {
+    document.getElementById('qo-filter-vendor').style.display = 'none';
+  }
+
   // Print filter: show only if data exists, clean up label
   if (printSet.size > 0) {
     addOptions('qo-filter-print', [...printSet].sort(), v =>
@@ -1197,6 +1210,8 @@ body.qo-modal-open { overflow: hidden; }
       for (const [filter, value] of Object.entries(active)) {
         if (filter === 'type') {
           if (card.dataset.type !== value) { show = false; break; }
+        } else if (filter === 'vendor') {
+          if ((card.dataset.vendor || '').toLowerCase() !== value.toLowerCase()) { show = false; break; }
         } else {
           const raw = card.dataset[filter] || '';
           const vals = raw.split('|||').map(v => v.trim().toLowerCase()).filter(Boolean);
