@@ -65,9 +65,10 @@
     <!-- Secondary filters (color, size, print) -->
     <div class="qo-cat__toolbar" id="qo-toolbar">
       <div class="qo-cat__selects">
-        <select class="qo-cat__select" id="qo-filter-color" data-filter="colors">
-          <option value="">Couleur</option>
-        </select>
+        <div class="qo-color-filter" id="qo-color-filter">
+          <span class="qo-color-filter__label">Couleur</span>
+          <div class="qo-color-swatches" id="qo-color-swatches"></div>
+        </div>
         <select class="qo-cat__select" id="qo-filter-size"  data-filter="sizes">
           <option value="">Taille</option>
         </select>
@@ -589,6 +590,62 @@
 }
 
 .qo-cat__reset:hover { border-color: #111; color: #111; }
+
+/* ── Color swatches block ───────────────── */
+.qo-color-filter {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f3f3f3;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 7px 12px;
+  max-width: 220px;
+}
+
+.qo-color-filter__label {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.qo-color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 72px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+.qo-color-swatches::-webkit-scrollbar { width: 3px; }
+.qo-color-swatches::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.qo-color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.12);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+
+.qo-color-swatch:hover { transform: scale(1.2); }
+
+.qo-color-swatch.is-active {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #C9A96E;
+  transform: scale(1.15);
+}
+
+.qo-color-filter.is-active { border-color: #C9A96E; background: #fdf9ee; }
+
+.qo-color-filter.is-hidden { display: none; }
 
 .qo-cat__count {
   font-size: 0.82rem;
@@ -1175,7 +1232,41 @@ body.qo-modal-open { overflow: hidden; }
     return s.replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  addOptions('qo-filter-color', [...colorSet].sort(), titleCase);
+  // Build color swatches
+  let activeColor = '';
+  const colorFilterEl  = document.getElementById('qo-color-filter');
+  const colorSwatchesEl = document.getElementById('qo-color-swatches');
+
+  if (colorSet.size > 0) {
+    [...colorSet].sort().forEach(colorVal => {
+      const bg = getColor(colorVal);
+      const isLight = ['blanc','white','écru','ecru','beige','sable','sand','ivoire','ivory'].some(w => colorVal.includes(w));
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'qo-color-swatch';
+      btn.dataset.color = colorVal;
+      btn.title = titleCase(colorVal);
+      btn.style.background = bg;
+      if (isLight) btn.style.borderColor = '#bbb';
+      btn.addEventListener('click', () => {
+        if (activeColor === colorVal) {
+          activeColor = '';
+          btn.classList.remove('is-active');
+          colorFilterEl.classList.remove('is-active');
+        } else {
+          activeColor = colorVal;
+          colorSwatchesEl.querySelectorAll('.qo-color-swatch').forEach(b => b.classList.remove('is-active'));
+          btn.classList.add('is-active');
+          colorFilterEl.classList.add('is-active');
+        }
+        applyFilters();
+      });
+      colorSwatchesEl.appendChild(btn);
+    });
+  } else {
+    colorFilterEl.classList.add('is-hidden');
+  }
+
   addOptions('qo-filter-size',  sortSizes([...sizeSet]));
 
   // Vendor filter
@@ -1194,14 +1285,14 @@ body.qo-modal-open { overflow: hidden; }
     document.getElementById('qo-filter-print').style.display = 'none';
   }
 
-  // Hide color/size filters if no data
-  if (colorSet.size === 0) document.getElementById('qo-filter-color').style.display = 'none';
-  if (sizeSet.size  === 0) document.getElementById('qo-filter-size').style.display  = 'none';
+  // Hide size filter if no data
+  if (sizeSet.size === 0) document.getElementById('qo-filter-size').style.display = 'none';
 
   /* ── Filter logic ───────────────────────────────── */
   function applyFilters() {
     const active = {};
-    if (activeType) active.type = activeType;
+    if (activeType)  active.type   = activeType;
+    if (activeColor) active.colors = activeColor;
     selects.forEach(s => { if (s.value) active[s.dataset.filter] = s.value; });
 
     let visible = 0;
@@ -1230,7 +1321,10 @@ body.qo-modal-open { overflow: hidden; }
 
   document.getElementById('qo-reset').addEventListener('click', () => {
     selects.forEach(s => { s.value = ''; s.classList.remove('is-active'); });
-    activeType = '';
+    activeType  = '';
+    activeColor = '';
+    colorSwatchesEl.querySelectorAll('.qo-color-swatch').forEach(b => b.classList.remove('is-active'));
+    colorFilterEl.classList.remove('is-active');
     typesEl.querySelectorAll('.qo-type-btn').forEach(b => b.classList.remove('is-active'));
     applyFilters();
   });
