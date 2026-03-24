@@ -69,15 +69,33 @@
           <span class="qo-color-filter__label">Couleur</span>
           <div class="qo-color-swatches" id="qo-color-swatches"></div>
         </div>
-        <select class="qo-cat__select" id="qo-filter-size"  data-filter="sizes">
-          <option value="">Taille</option>
-        </select>
-        <select class="qo-cat__select" id="qo-filter-vendor" data-filter="vendor">
-          <option value="">Fournisseur</option>
-        </select>
-        <select class="qo-cat__select" id="qo-filter-print" data-filter="print">
-          <option value="">Type d'impression</option>
-        </select>
+        <div class="qo-panel-filter" id="qo-panel-size" data-filter="sizes">
+          <button class="qo-panel-filter__trigger" type="button">
+            <span class="qo-panel-filter__title">Taille</span>
+            <svg class="qo-panel-filter__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="qo-panel-filter__panel">
+            <div class="qo-panel-filter__list"></div>
+          </div>
+        </div>
+        <div class="qo-panel-filter" id="qo-panel-vendor" data-filter="vendor">
+          <button class="qo-panel-filter__trigger" type="button">
+            <span class="qo-panel-filter__title">Fournisseur</span>
+            <svg class="qo-panel-filter__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="qo-panel-filter__panel">
+            <div class="qo-panel-filter__list"></div>
+          </div>
+        </div>
+        <div class="qo-panel-filter" id="qo-panel-print" data-filter="print">
+          <button class="qo-panel-filter__trigger" type="button">
+            <span class="qo-panel-filter__title">Type d'impression</span>
+            <svg class="qo-panel-filter__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="qo-panel-filter__panel">
+            <div class="qo-panel-filter__list"></div>
+          </div>
+        </div>
         <button class="qo-cat__reset" id="qo-reset" type="button">Réinitialiser</button>
       </div>
       <span class="qo-cat__count" id="qo-count"></span>
@@ -654,6 +672,102 @@
   white-space: nowrap;
 }
 
+/* ── Panel filter (custom dropdown) ────────── */
+.qo-panel-filter {
+  position: relative;
+}
+
+.qo-panel-filter__trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f3f3f3;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  white-space: nowrap;
+}
+
+.qo-panel-filter__trigger:hover { border-color: #bbb; }
+
+.qo-panel-filter.is-active .qo-panel-filter__trigger {
+  border-color: #C9A96E;
+  background: #fdf9ee;
+  color: #C9A96E;
+}
+
+.qo-panel-filter__arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.qo-panel-filter.is-open .qo-panel-filter__arrow {
+  transform: rotate(180deg);
+}
+
+.qo-panel-filter__panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+  min-width: 180px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.qo-panel-filter.is-open .qo-panel-filter__panel {
+  display: block;
+}
+
+.qo-panel-filter__list {
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ddd transparent;
+}
+
+.qo-panel-filter__list::-webkit-scrollbar { width: 4px; }
+.qo-panel-filter__list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+.qo-panel-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 13px 20px;
+  border: none;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.qo-panel-item:last-child { border-bottom: none; }
+.qo-panel-item:hover { color: #111; background: #f7f7f7; }
+
+.qo-panel-item.is-active {
+  background: #111;
+  color: #fff;
+}
+
+.qo-panel-filter.is-hidden { display: none; }
+
 /* ══════════════════════════════════════════
    Product grid
 ══════════════════════════════════════════ */
@@ -1146,8 +1260,6 @@ body.qo-modal-open { overflow: hidden; }
   const countEl   = document.getElementById('qo-count');
   const heroQty   = document.getElementById('qo-hero-qty');
   const typesEl   = document.getElementById('qo-types');
-  const selects   = document.querySelectorAll('.qo-cat__select');
-
   /* ── Collect unique filter values ───────────────── */
   const typeMap   = new Map(); // handleized → raw label
   const colorSet  = new Set();
@@ -1267,33 +1379,76 @@ body.qo-modal-open { overflow: hidden; }
     colorFilterEl.classList.add('is-hidden');
   }
 
-  addOptions('qo-filter-size',  sortSizes([...sizeSet]));
+  /* ── Panel filters ──────────────────────────────── */
+  const panelFilters = {}; // { sizes: '', vendor: '', print: '' }
 
-  // Vendor filter
-  if (vendorSet.size > 0) {
-    addOptions('qo-filter-vendor', [...vendorSet].sort(), titleCase);
-  } else {
-    document.getElementById('qo-filter-vendor').style.display = 'none';
+  function buildPanel(panelId, values, labelFn) {
+    const wrapper = document.getElementById(panelId);
+    if (!wrapper) return;
+    if (values.length === 0) { wrapper.classList.add('is-hidden'); return; }
+
+    const filterKey = wrapper.dataset.filter;
+    panelFilters[filterKey] = '';
+
+    const list = wrapper.querySelector('.qo-panel-filter__list');
+    const trigger = wrapper.querySelector('.qo-panel-filter__trigger');
+    const titleEl = wrapper.querySelector('.qo-panel-filter__title');
+    const defaultLabel = titleEl.textContent;
+
+    values.forEach(val => {
+      const label = labelFn ? labelFn(val) : val;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'qo-panel-item';
+      btn.dataset.value = val;
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        const isActive = btn.classList.contains('is-active');
+        list.querySelectorAll('.qo-panel-item').forEach(b => b.classList.remove('is-active'));
+        if (isActive) {
+          panelFilters[filterKey] = '';
+          wrapper.classList.remove('is-active');
+          titleEl.textContent = defaultLabel;
+        } else {
+          btn.classList.add('is-active');
+          panelFilters[filterKey] = val;
+          wrapper.classList.add('is-active');
+          titleEl.textContent = label;
+        }
+        closeAllPanels(wrapper);
+        applyFilters();
+      });
+      list.appendChild(btn);
+    });
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = wrapper.classList.contains('is-open');
+      closeAllPanels();
+      if (!isOpen) wrapper.classList.add('is-open');
+    });
   }
 
-  // Print filter: show only if data exists, clean up label
-  if (printSet.size > 0) {
-    addOptions('qo-filter-print', [...printSet].sort(), v =>
-      v.replace(/^print_/i, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-    );
-  } else {
-    document.getElementById('qo-filter-print').style.display = 'none';
+  function closeAllPanels(except) {
+    document.querySelectorAll('.qo-panel-filter').forEach(p => {
+      if (p !== except) p.classList.remove('is-open');
+    });
   }
 
-  // Hide size filter if no data
-  if (sizeSet.size === 0) document.getElementById('qo-filter-size').style.display = 'none';
+  document.addEventListener('click', () => closeAllPanels());
+
+  buildPanel('qo-panel-size',   sortSizes([...sizeSet]));
+  buildPanel('qo-panel-vendor', [...vendorSet].sort(), titleCase);
+  buildPanel('qo-panel-print',  [...printSet].sort(), v =>
+    v.replace(/^print_/i, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  );
 
   /* ── Filter logic ───────────────────────────────── */
   function applyFilters() {
     const active = {};
     if (activeType)  active.type   = activeType;
     if (activeColor) active.colors = activeColor;
-    selects.forEach(s => { if (s.value) active[s.dataset.filter] = s.value; });
+    Object.entries(panelFilters).forEach(([k, v]) => { if (v) active[k] = v; });
 
     let visible = 0;
     cards.forEach(card => {
@@ -1314,13 +1469,20 @@ body.qo-modal-open { overflow: hidden; }
     });
 
     countEl.textContent = `${visible} produit${visible !== 1 ? 's' : ''}`;
-    selects.forEach(s => s.classList.toggle('is-active', !!s.value));
   }
 
-  selects.forEach(s => s.addEventListener('change', () => applyFilters()));
-
   document.getElementById('qo-reset').addEventListener('click', () => {
-    selects.forEach(s => { s.value = ''; s.classList.remove('is-active'); });
+    Object.keys(panelFilters).forEach(k => {
+      panelFilters[k] = '';
+      const wrapper = document.querySelector(`.qo-panel-filter[data-filter="${k}"]`);
+      if (wrapper) {
+        wrapper.classList.remove('is-active');
+        wrapper.querySelectorAll('.qo-panel-item').forEach(b => b.classList.remove('is-active'));
+        const titleEl = wrapper.querySelector('.qo-panel-filter__title');
+        const defaultLabels = { sizes: 'Taille', vendor: 'Fournisseur', print: "Type d'impression" };
+        if (titleEl) titleEl.textContent = defaultLabels[k] || k;
+      }
+    });
     activeType  = '';
     activeColor = '';
     colorSwatchesEl.querySelectorAll('.qo-color-swatch').forEach(b => b.classList.remove('is-active'));
