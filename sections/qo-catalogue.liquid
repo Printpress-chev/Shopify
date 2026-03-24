@@ -65,9 +65,14 @@
     <!-- Secondary filters (color, size, print) -->
     <div class="qo-cat__toolbar" id="qo-toolbar">
       <div class="qo-cat__selects">
-        <div class="qo-color-filter" id="qo-color-filter">
-          <span class="qo-color-filter__label">Couleur</span>
-          <div class="qo-color-swatches" id="qo-color-swatches"></div>
+        <div class="qo-panel-filter" id="qo-panel-color">
+          <button class="qo-panel-filter__trigger" type="button">
+            <span class="qo-panel-filter__title">Couleur</span>
+            <svg class="qo-panel-filter__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="qo-panel-filter__panel">
+            <div class="qo-color-swatches" id="qo-color-swatches"></div>
+          </div>
         </div>
         <div class="qo-panel-filter" id="qo-panel-size" data-filter="sizes">
           <button class="qo-panel-filter__trigger" type="button">
@@ -609,39 +614,20 @@
 
 .qo-cat__reset:hover { border-color: #111; color: #111; }
 
-/* ── Color swatches block ───────────────── */
-.qo-color-filter {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  background: #f3f3f3;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 7px 12px;
-  max-width: 220px;
-}
-
-.qo-color-filter__label {
-  font-size: 0.83rem;
-  font-weight: 600;
-  color: #333;
-  white-space: nowrap;
-  padding-top: 2px;
-  flex-shrink: 0;
-}
-
+/* ── Color swatches in panel ────────────── */
 .qo-color-swatches {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  max-height: 72px;
+  gap: 8px;
+  padding: 14px;
+  max-height: 160px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+  scrollbar-color: #ddd transparent;
 }
 
-.qo-color-swatches::-webkit-scrollbar { width: 3px; }
-.qo-color-swatches::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+.qo-color-swatches::-webkit-scrollbar { width: 4px; }
+.qo-color-swatches::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
 
 .qo-color-swatch {
   width: 20px;
@@ -661,9 +647,6 @@
   transform: scale(1.15);
 }
 
-.qo-color-filter.is-active { border-color: #C9A96E; background: #fdf9ee; }
-
-.qo-color-filter.is-hidden { display: none; }
 
 .qo-cat__count {
   font-size: 0.82rem;
@@ -1344,12 +1327,14 @@ body.qo-modal-open { overflow: hidden; }
     return s.replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  // Build color swatches
+  // Build color swatches panel
   let activeColor = '';
-  const colorFilterEl  = document.getElementById('qo-color-filter');
+  const colorPanelEl   = document.getElementById('qo-panel-color');
   const colorSwatchesEl = document.getElementById('qo-color-swatches');
+  const colorTitleEl   = colorPanelEl ? colorPanelEl.querySelector('.qo-panel-filter__title') : null;
+  const colorTriggerEl = colorPanelEl ? colorPanelEl.querySelector('.qo-panel-filter__trigger') : null;
 
-  if (colorSet.size > 0) {
+  if (colorSet.size > 0 && colorPanelEl) {
     [...colorSet].sort().forEach(colorVal => {
       const bg = getColor(colorVal);
       const isLight = ['blanc','white','écru','ecru','beige','sable','sand','ivoire','ivory'].some(w => colorVal.includes(w));
@@ -1360,23 +1345,34 @@ body.qo-modal-open { overflow: hidden; }
       btn.title = titleCase(colorVal);
       btn.style.background = bg;
       if (isLight) btn.style.borderColor = '#bbb';
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
         if (activeColor === colorVal) {
           activeColor = '';
           btn.classList.remove('is-active');
-          colorFilterEl.classList.remove('is-active');
+          colorPanelEl.classList.remove('is-active');
+          if (colorTitleEl) colorTitleEl.textContent = 'Couleur';
         } else {
           activeColor = colorVal;
           colorSwatchesEl.querySelectorAll('.qo-color-swatch').forEach(b => b.classList.remove('is-active'));
           btn.classList.add('is-active');
-          colorFilterEl.classList.add('is-active');
+          colorPanelEl.classList.add('is-active');
+          if (colorTitleEl) colorTitleEl.textContent = titleCase(colorVal);
         }
+        closeAllPanels(colorPanelEl);
         applyFilters();
       });
       colorSwatchesEl.appendChild(btn);
     });
-  } else {
-    colorFilterEl.classList.add('is-hidden');
+
+    colorTriggerEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = colorPanelEl.classList.contains('is-open');
+      closeAllPanels();
+      if (!isOpen) colorPanelEl.classList.add('is-open');
+    });
+  } else if (colorPanelEl) {
+    colorPanelEl.classList.add('is-hidden');
   }
 
   /* ── Panel filters ──────────────────────────────── */
@@ -1486,7 +1482,8 @@ body.qo-modal-open { overflow: hidden; }
     activeType  = '';
     activeColor = '';
     colorSwatchesEl.querySelectorAll('.qo-color-swatch').forEach(b => b.classList.remove('is-active'));
-    colorFilterEl.classList.remove('is-active');
+    if (colorPanelEl) { colorPanelEl.classList.remove('is-active'); }
+    if (colorTitleEl) colorTitleEl.textContent = 'Couleur';
     typesEl.querySelectorAll('.qo-type-btn').forEach(b => b.classList.remove('is-active'));
     applyFilters();
   });
