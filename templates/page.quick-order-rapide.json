@@ -1,12 +1,99 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "qo_catalogue": {
       "type": "qo-catalogue",
+      "blocks": {
+        "type_icon_mWNrdm": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "t-shirt",
+            "type_label": "",
+            "icon": "shopify://shop_images/sweatshirt.png"
+          }
+        },
+        "type_icon_EinbaW": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "hoodie",
+            "type_label": "",
+            "icon": "shopify://shop_images/hoodies.png"
+          }
+        },
+        "type_icon_9hknF9": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "polo",
+            "type_label": "",
+            "icon": "shopify://shop_images/polos.png"
+          }
+        },
+        "type_icon_g78mty": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "jacket",
+            "type_label": "",
+            "icon": "shopify://shop_images/jacket.png"
+          }
+        },
+        "type_icon_PpppLj": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "security vest",
+            "type_label": "",
+            "icon": "shopify://shop_images/Security_vest.png"
+          }
+        },
+        "type_icon_diqkY6": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "Cap",
+            "type_label": "",
+            "icon": "shopify://shop_images/cap.png"
+          }
+        },
+        "type_icon_tiX4KR": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "Tote bag",
+            "type_label": "",
+            "icon": "shopify://shop_images/tote_bag.png"
+          }
+        },
+        "type_icon_z48ydt": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "Beanie",
+            "type_label": "",
+            "icon": "shopify://shop_images/beanie.png"
+          }
+        }
+      },
+      "block_order": [
+        "type_icon_mWNrdm",
+        "type_icon_EinbaW",
+        "type_icon_9hknF9",
+        "type_icon_g78mty",
+        "type_icon_PpppLj",
+        "type_icon_diqkY6",
+        "type_icon_tiX4KR",
+        "type_icon_z48ydt"
+      ],
       "settings": {
         "collection_handle": "all",
         "min_qty": 12
       }
     }
   },
-  "order": ["qo_catalogue"]
+  "order": [
+    "qo_catalogue"
+  ]
 }

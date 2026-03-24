@@ -26,10 +26,14 @@
     var input = document.getElementById('qo-qty');
     if (!btn || !input) return;
     var base = btn.href;
-    input.addEventListener('input', function() {
-      var qty = encodeURIComponent(input.value);
-      btn.href = base + (base.includes('?') ? '&' : '?') + 'qty=' + qty;
-    });
+    function updateLink() {
+      var qty = parseInt(input.value) || 12;
+      if (qty < 12) { input.value = 12; qty = 12; }
+      btn.href = base.split('?')[0] + '?quantity=' + qty;
+    }
+    input.addEventListener('input', updateLink);
+    input.addEventListener('change', updateLink);
+    updateLink();
   })();
 </script>
 
@@ -68,9 +72,9 @@
     font-weight: 800;
     text-align: center;
     background: transparent;
-    color: #FF6500;
+    color: #C9A96E;
     border: none;
-    border-bottom: 3px solid #FF6500;
+    border-bottom: 3px solid #C9A96E;
     outline: none;
     padding: 4px 8px;
     -moz-appearance: textfield;
@@ -83,7 +87,7 @@
 
   .qo-quote__btn {
     display: inline-block;
-    background: #FF6500;
+    background: #C9A96E;
     color: #fff;
     font-size: 1rem;
     font-weight: 700;

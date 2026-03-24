@@ -8,20 +8,20 @@
 ════════════════════════════════════════════ -->
 <div class="qo-step1">
   <div class="qo-step1__inner">
-    <p class="qo-step__label">
-      <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-      </svg>
-      ÉTAPE 1 :
-    </p>
     <div class="qo-step1__line">
+      <span class="qo-tip" data-tip="Entrez le nombre de vêtements que vous souhaitez commander">
+        <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+        </svg>
+      </span>
+      <span class="qo-step__num">1 :</span>
       <span>J'AIMERAIS COMMANDER</span>
       <input
         class="qo-step1__qty"
         id="qo-hero-qty"
         type="number"
-        value="{{ section.settings.min_qty }}"
-        min="{{ section.settings.min_qty }}"
+        placeholder="100"
+        min="1"
         step="1"
         aria-label="Nombre de vêtements"
       >
@@ -36,10 +36,12 @@
 <div class="qo-step2" id="qo-step2">
   <div class="qo-step2__inner">
     <p class="qo-step__label qo-step__label--light">
-      <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-      </svg>
-      ÉTAPE 2 : CHOISISSEZ VOTRE <strong>TYPE DE VÊTEMENT</strong>
+      <span class="qo-tip" data-tip="Cliquez sur la catégorie de vêtement souhaitée pour filtrer les produits">
+        <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+        </svg>
+      </span>
+      <span class="qo-step__num">2 :</span> CHOISISSEZ VOTRE <strong>TYPE DE VÊTEMENT</strong>
     </p>
     <!-- Built dynamically by JS from product types in catalog -->
     <div class="qo-types" id="qo-types"></div>
@@ -52,18 +54,17 @@
 <div class="qo-step3" id="qo-step3">
   <div class="qo-step3__header">
     <p class="qo-step__label qo-step__label--dark">
-      <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-      </svg>
-      ÉTAPE 3 : CHOISISSEZ VOTRE <strong>PRODUIT</strong>
+      <span class="qo-tip" data-tip="Utilisez les filtres pour affiner votre recherche. Cliquez sur l'icône INFO sous chaque produit pour plus de détails">
+        <svg class="qo-step__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+        </svg>
+      </span>
+      <span class="qo-step__num">3 :</span> CHOISISSEZ VOTRE <strong id="qo-step3-type">PRODUIT</strong>
     </p>
 
     <!-- Secondary filters (color, size, print) -->
     <div class="qo-cat__toolbar" id="qo-toolbar">
       <div class="qo-cat__selects">
-        <select class="qo-cat__select" id="qo-filter-type"  data-filter="type" style="display:none">
-          <option value="">Catégorie</option>
-        </select>
         <select class="qo-cat__select" id="qo-filter-color" data-filter="colors">
           <option value="">Couleur</option>
         </select>
@@ -90,18 +91,32 @@
 
       {%- for option in product.options_with_values -%}
         {%- assign opt_lower = option.name | downcase -%}
-        {%- if opt_lower == 'couleur' or opt_lower == 'color' or opt_lower == 'colour' -%}
+        {%- if opt_lower contains 'color' or opt_lower contains 'couleur' or opt_lower contains 'colour' -%}
           {%- assign p_colors = option.values | join: '|||' -%}
         {%- endif -%}
-        {%- if opt_lower == 'taille' or opt_lower == 'size' -%}
+        {%- if opt_lower contains 'size' or opt_lower contains 'taille' -%}
           {%- assign p_sizes = option.values | join: '|||' -%}
         {%- endif -%}
       {%- endfor -%}
 
       {%- for tag in product.tags -%}
-        {%- if tag contains 'print_' -%}
+        {%- assign tag_l = tag | downcase -%}
+        {%- if tag_l contains 'print_' or tag_l == 'serigraphie' or tag_l == 'sérigraphie' or tag_l == 'dtg' or tag_l == 'dtf' or tag_l == 'broderie' or tag_l == 'embroidery' -%}
           {%- assign p_print = p_print | append: tag | append: '|||' -%}
         {%- endif -%}
+      {%- endfor -%}
+
+      {%- assign color_count = p_colors | split: '|||' | size -%}
+
+      {%- assign p_fit = '' -%}
+      {%- assign p_weight = '' -%}
+      {%- assign p_badge = '' -%}
+      {%- for tag in product.tags -%}
+        {%- assign tag_lower = tag | downcase -%}
+        {%- if tag_lower contains 'fit:' -%}{%- assign p_fit = tag | remove: 'fit:' | remove: 'Fit:' -%}{%- endif -%}
+        {%- if tag_lower contains 'weight:' -%}{%- assign p_weight = tag | remove: 'weight:' | remove: 'Weight:' -%}{%- endif -%}
+        {%- if tag_lower == 'popular' -%}{%- assign p_badge = 'popular' -%}{%- endif -%}
+        {%- if tag_lower == 'staff_pick' or tag_lower == 'staff pick' -%}{%- assign p_badge = 'staff' -%}{%- endif -%}
       {%- endfor -%}
 
       <div class="qo-cat__card"
@@ -113,13 +128,23 @@
         data-product="{{ product.id }}"
         data-handle="{{ product.handle }}"
       >
-        <div class="qo-cat__card-img">
+        {%- assign lifestyle_img = product.images[1] -%}
+        <div class="qo-cat__card-img{% if lifestyle_img %} has-lifestyle{% endif %}">
           {%- if product.featured_image -%}
             <img
-              src="{{ product.featured_image | image_url: width: 480 }}"
+              class="qo-cat__img-main"
+              src="{{ product.featured_image | image_url: width: 600 }}"
               alt="{{ product.title | escape }}"
               loading="lazy"
             >
+            {%- if lifestyle_img -%}
+              <img
+                class="qo-cat__img-lifestyle"
+                src="{{ lifestyle_img | image_url: width: 600 }}"
+                alt="{{ product.title | escape }} — style"
+                loading="lazy"
+              >
+            {%- endif -%}
           {%- else -%}
             <div class="qo-cat__no-img">
               <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -129,33 +154,35 @@
               </svg>
             </div>
           {%- endif -%}
-          {%- if p_print != '' -%}
-            {%- assign first_print = p_print | split: '|||' | first -%}
-            <span class="qo-cat__badge">{{ first_print | replace: 'print_', '' | upcase }}</span>
+          {%- if p_badge == 'popular' -%}
+            <span class="qo-cat__badge qo-cat__badge--popular">★ POPULAR</span>
+          {%- elsif p_badge == 'staff' -%}
+            <span class="qo-cat__badge qo-cat__badge--staff">♥ STAFF PICK</span>
           {%- endif -%}
         </div>
 
         <div class="qo-cat__card-info">
-          {%- if product.type != blank -%}
-            <p class="qo-cat__card-type">{{ product.type }}</p>
-          {%- endif -%}
-          <h3 class="qo-cat__card-name">{{ product.title }}</h3>
-          <p class="qo-cat__card-price">
-            {%- if product.price_min != product.price_max -%}
-              À partir de {{ product.price_min | money }}
-            {%- else -%}
-              {{ product.price_min | money }}
+          <div class="qo-cat__card-text">
+            {%- if product.type != blank -%}
+              <p class="qo-cat__card-type">{{ product.type | upcase }}</p>
             {%- endif -%}
-            <span class="qo-cat__per"> / pièce</span>
-          </p>
-          {%- if p_colors != '' -%}
-            <p class="qo-cat__color-count">
-              {%- assign color_count = p_colors | split: '|||' | size -%}
-              {{ color_count }} couleur{% if color_count > 1 %}s{% endif %}
+            <h3 class="qo-cat__card-name">{{ product.title }}</h3>
+            {%- if p_fit != '' or p_weight != '' -%}
+              <p class="qo-cat__card-meta">
+                {%- if p_fit != '' -%}<span>Fit: <strong>{{ p_fit }}</strong></span>{%- endif -%}
+                {%- if p_weight != '' -%}<span>Poids: <strong>{{ p_weight }}</strong></span>{%- endif -%}
+              </p>
+            {%- endif -%}
+            <p class="qo-cat__card-price">
+              À partir de {{ product.price_min | money }}
             </p>
-          {%- endif -%}
-          <button class="qo-cat__card-btn" data-open="{{ product.id }}" type="button">
-            Sélectionner
+            {%- if p_colors != '' -%}
+              <p class="qo-cat__color-count">({{ color_count }} couleur{% if color_count > 1 %}s{% endif %})</p>
+            {%- endif -%}
+          </div>
+          <button class="qo-cat__info-btn" data-product="{{ product.id }}" type="button" aria-label="Info {{ product.title | escape }}">
+            <span class="qo-cat__info-circle">i</span>
+            <span class="qo-cat__info-label">INFO</span>
           </button>
         </div>
 
@@ -218,6 +245,10 @@
   <div class="qo-modal__body" id="qo-modal-body"></div>
 </div>
 
+<script type="application/json" id="qo-icons-data">
+[{%- assign _first = true -%}{%- for block in section.blocks -%}{%- if block.type == 'type_icon' and block.settings.icon != blank -%}{%- unless _first -%},{%- endunless -%}{"type":{{ block.settings.type_name | downcase | handleize | json }},"url":{{ block.settings.icon | image_url: width: 140 | json }},"label":{{ block.settings.type_label | default: block.settings.type_name | json }}}{%- assign _first = false -%}{%- endif -%}{%- endfor -%}]
+</script>
+
 <script>
   window.qoCatConfig = {
     minQty: {{ section.settings.min_qty }},
@@ -232,45 +263,104 @@
    STEP 1 — Quantity
 ══════════════════════════════════════════ */
 .qo-step1 {
-  background: #1a1a1a;
+  background: #C9A96E;
   padding: 48px 24px;
 }
 
 .qo-step1__inner {
   max-width: 1100px;
   margin: 0 auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .qo-step__label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.78rem;
+  justify-content: center;
+  gap: 10px;
+  font-size: clamp(1rem, 2vw, 1.4rem);
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #FF6500;
-  margin: 0 0 20px;
+  color: #1a1a1a;
+  margin: 0 0 24px;
 }
 
-.qo-step__label--light { color: rgba(255,255,255,0.5); }
-.qo-step__label--dark  { color: #888; }
+.qo-step__label--light { color: rgba(255,255,255,0.8); }
+.qo-step__label--dark  { color: #444; }
 .qo-step__label strong { color: inherit; font-weight: 900; }
 
-.qo-step__icon {
-  width: 16px;
-  height: 16px;
+/* Tooltip */
+.qo-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
   flex-shrink: 0;
+}
+
+.qo-tip::before,
+.qo-tip::after {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 200;
+}
+
+.qo-tip::after {
+  content: attr(data-tip);
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.4;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: max-content;
+  max-width: 240px;
+  white-space: normal;
+  text-align: center;
+}
+
+.qo-tip::before {
+  content: '';
+  bottom: calc(100% + 4px);
+  border: 6px solid transparent;
+  border-top-color: #1a1a1a;
+}
+
+.qo-tip:hover::before,
+.qo-tip:hover::after { opacity: 1; }
+
+.qo-step__icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.qo-step__num {
+  font-weight: 900;
+  font-size: 1.1em;
 }
 
 .qo-step1__line {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
-  font-size: clamp(1.4rem, 3.5vw, 2.4rem);
+  font-size: clamp(1rem, 2vw, 1.5rem);
   font-weight: 900;
-  color: #fff;
+  color: #1a1a1a;
   text-transform: uppercase;
   letter-spacing: -0.01em;
   line-height: 1.1;
@@ -279,17 +369,19 @@
 .qo-step1__qty {
   background: transparent;
   border: none;
-  border-bottom: 3px solid #FF6500;
-  color: #FF6500;
-  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  border-bottom: 3px solid #1a1a1a;
+  color: #1a1a1a;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
   font-weight: 900;
-  width: 120px;
+  width: 90px;
   text-align: center;
   outline: none;
   -moz-appearance: textfield;
   padding: 0 4px;
   line-height: 1;
 }
+
+.qo-step1__qty::placeholder { color: rgba(0,0,0,0.35); }
 
 .qo-step1__qty::-webkit-outer-spin-button,
 .qo-step1__qty::-webkit-inner-spin-button { -webkit-appearance: none; }
@@ -298,7 +390,7 @@
    STEP 2 — Garment type
 ══════════════════════════════════════════ */
 .qo-step2 {
-  background: #111;
+  background: #000;
   padding: 40px 24px 48px;
   border-top: 1px solid #222;
 }
@@ -306,6 +398,7 @@
 .qo-step2__inner {
   max-width: 1100px;
   margin: 0 auto;
+  text-align: center;
 }
 
 /* Arrow connector between steps */
@@ -321,59 +414,99 @@
 }
 
 .qo-step1::after {
-  border-top: 22px solid #1a1a1a;
+  border-top: 22px solid #C9A96E;
   margin-top: 0;
 }
 
 .qo-step2::after {
-  border-top: 22px solid #111;
+  border-top: 22px solid #000;
 }
 
 /* Garment type icons */
 .qo-types {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
+  flex-wrap: nowrap;
   justify-content: center;
   margin-top: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
 }
+
+.qo-types::-webkit-scrollbar { display: none; }
 
 .qo-type-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 20px 16px 16px;
-  border: 2px solid rgba(255,255,255,0.12);
+  gap: 6px;
+  padding: 12px 10px 10px;
+  border: none;
   border-radius: 10px;
   background: transparent;
   color: rgba(255,255,255,0.7);
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 88px;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .qo-type-btn:hover {
-  border-color: rgba(255,255,255,0.4);
   color: #fff;
 }
 
 .qo-type-btn.is-active {
-  border-color: #FF6500;
-  color: #FF6500;
-  background: rgba(255,101,0,0.08);
+  color: #C9A96E;
 }
 
-.qo-type-btn svg {
+.qo-type-btn::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16a34a;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.2s, transform 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 6l3 3 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px;
+}
+
+.qo-type-btn.is-active::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.qo-type-btn svg,
+.qo-type-btn img.qo-type-img {
   width: 52px;
   height: 52px;
+}
+
+.qo-type-btn img.qo-type-img {
+  object-fit: contain;
+  filter: invert(1);
+  mix-blend-mode: screen;
+  transition: filter 0.2s;
+}
+
+.qo-type-btn.is-active img.qo-type-img {
+  filter: invert(1) sepia(1) saturate(6) hue-rotate(0deg);
+  mix-blend-mode: normal;
 }
 
 .qo-type-btn__label {
   font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   white-space: nowrap;
 }
 
@@ -381,7 +514,7 @@
    STEP 3 — Product grid
 ══════════════════════════════════════════ */
 .qo-step3 {
-  background: #f8f8f8;
+  background: #fff;
   min-height: 40vh;
 }
 
@@ -436,8 +569,8 @@
   min-width: 120px;
 }
 
-.qo-cat__select:focus { border-color: #FF6500; outline: none; }
-.qo-cat__select.is-active { border-color: #FF6500; color: #FF6500; background-color: #fff5ee; }
+.qo-cat__select:focus { border-color: #C9A96E; outline: none; }
+.qo-cat__select.is-active { border-color: #C9A96E; color: #C9A96E; background-color: #fdf9ee; }
 
 .qo-cat__reset {
   background: none;
@@ -464,16 +597,16 @@
    Product grid
 ══════════════════════════════════════════ */
 .qo-cat__grid {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 28px 24px 64px;
+  max-width: 100%;
+  margin: 0;
+  padding: 20px 16px 48px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+  gap: 14px;
 
-  @media (max-width: 1100px) { grid-template-columns: repeat(3, 1fr); }
-  @media (max-width: 749px)  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  @media (max-width: 480px)  { grid-template-columns: 1fr; }
+  @media (max-width: 900px)  { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (max-width: 380px)  { grid-template-columns: 1fr; }
 }
 
 .qo-cat__empty {
@@ -488,36 +621,46 @@
 ══════════════════════════════════════════ */
 .qo-cat__card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
   border: 1.5px solid #ebebeb;
   transition: box-shadow 0.25s, transform 0.25s, border-color 0.25s;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .qo-cat__card:hover {
   box-shadow: 0 8px 32px rgba(0,0,0,0.1);
   transform: translateY(-3px);
-  border-color: #FF6500;
+  border-color: #ddd;
 }
 
 .qo-cat__card-img {
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #f2f2f2;
+  background: #e8e8e8;
 }
 
 .qo-cat__card-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
   display: block;
-  transition: transform 0.4s ease;
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-.qo-cat__card:hover .qo-cat__card-img img { transform: scale(1.05); }
+.qo-cat__img-lifestyle {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.qo-cat__card-img.has-lifestyle:hover .qo-cat__img-main { opacity: 0; }
+.qo-cat__card-img.has-lifestyle:hover .qo-cat__img-lifestyle { opacity: 1; }
+.qo-cat__card:hover .qo-cat__card-img img { transform: scale(1.04); }
 
 .qo-cat__no-img {
   width: 100%; height: 100%;
@@ -527,57 +670,111 @@
 
 .qo-cat__no-img svg { width: 48px; height: 48px; }
 
+/* Badges */
 .qo-cat__badge {
   position: absolute;
   top: 10px; left: 10px;
-  background: #111;
-  color: #fff;
-  font-size: 0.66rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 5px 9px;
+  border-radius: 5px;
+  line-height: 1;
 }
 
+.qo-cat__badge--popular {
+  background: #b8860b;
+  color: #fff;
+}
+
+.qo-cat__badge--staff {
+  background: #b8860b;
+  color: #fff;
+}
+
+/* Card info row */
 .qo-cat__card-info {
-  padding: 14px 16px 16px;
-  display: flex; flex-direction: column; gap: 5px; flex: 1;
+  padding: 8px 10px 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  flex: 1;
+}
+
+.qo-cat__card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .qo-cat__card-type {
-  font-size: 0.7rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.1em;
-  color: #FF6500; margin: 0;
-}
-
-.qo-cat__card-name {
-  font-size: 0.92rem; font-weight: 700;
-  color: #111; margin: 0; line-height: 1.25;
-}
-
-.qo-cat__card-price {
-  font-size: 0.92rem; font-weight: 800;
+  font-size: 0.7rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.06em;
   color: #111; margin: 0;
 }
 
-.qo-cat__per { font-size: 0.72rem; font-weight: 500; color: #888; }
-
-.qo-cat__color-count { font-size: 0.75rem; color: #999; margin: 0; }
-
-.qo-cat__card-btn {
-  width: 100%;
-  padding: 10px;
-  background: #111; color: #fff;
-  border: none; border-radius: 8px;
-  font-size: 0.8rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 10px;
+.qo-cat__card-name {
+  font-size: 0.78rem; font-weight: 500;
+  color: #444; margin: 0; line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-.qo-cat__card-btn:hover { background: #FF6500; }
+.qo-cat__card-meta {
+  font-size: 0.72rem; color: #555; margin: 2px 0 0;
+  display: flex; flex-direction: column; gap: 1px;
+}
+
+.qo-cat__card-meta strong { font-weight: 700; color: #222; }
+
+.qo-cat__card-price {
+  font-size: 0.8rem; font-weight: 800;
+  color: #b8860b; margin: 4px 0 0;
+  text-transform: uppercase; letter-spacing: 0.03em;
+}
+
+.qo-cat__color-count {
+  font-size: 0.72rem; color: #888; margin: 1px 0 0;
+}
+
+/* Info button */
+.qo-cat__info-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.qo-cat__info-btn:hover { opacity: 0.75; }
+
+.qo-cat__info-circle {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 900;
+  font-style: italic;
+  font-family: Georgia, serif;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.qo-cat__info-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #111;
+  text-transform: uppercase;
+}
 
 /* ══════════════════════════════════════════
    Backdrop + Modal
@@ -623,7 +820,7 @@
 
 .qo-modal__type {
   font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.1em; color: #FF6500; margin: 0 0 4px;
+  letter-spacing: 0.1em; color: #C9A96E; margin: 0 0 4px;
 }
 
 .qo-modal__title {
@@ -661,7 +858,7 @@
 }
 
 .qo-modal__swatch-btn:hover { transform: scale(1.15); border-color: #aaa; }
-.qo-modal__swatch-btn.is-active { border-color: #FF6500; box-shadow: 0 0 0 2px #FF6500; }
+.qo-modal__swatch-btn.is-active { border-color: #C9A96E; box-shadow: 0 0 0 2px #C9A96E; }
 
 .qo-modal__sizes { display: flex; flex-wrap: wrap; gap: 7px; }
 
@@ -676,7 +873,7 @@
 .qo-modal__size-btn.is-unavailable { opacity: 0.35; text-decoration: line-through; cursor: not-allowed; }
 
 .qo-modal__qty-group { margin-bottom: 20px; }
-.qo-modal__qty-min { font-weight: 500; color: #FF6500; text-transform: none; letter-spacing: 0; font-size: 0.76rem; }
+.qo-modal__qty-min { font-weight: 500; color: #C9A96E; text-transform: none; letter-spacing: 0; font-size: 0.76rem; }
 
 .qo-modal__qty-wrap {
   display: flex; align-items: center;
@@ -706,13 +903,13 @@
 
 .qo-modal__atc {
   width: 100%; padding: 16px;
-  background: #FF6500; color: #fff; border: none; border-radius: 10px;
+  background: #C9A96E; color: #fff; border: none; border-radius: 10px;
   font-size: 0.9rem; font-weight: 800;
   text-transform: uppercase; letter-spacing: 0.08em;
   cursor: pointer; transition: background 0.2s, transform 0.15s;
 }
 
-.qo-modal__atc:hover:not(:disabled) { background: #e05800; transform: translateY(-1px); }
+.qo-modal__atc:hover:not(:disabled) { background: #b8902a; transform: translateY(-1px); }
 .qo-modal__atc:disabled { background: #ccc; cursor: not-allowed; transform: none; }
 
 .qo-modal__feedback { margin: 12px 0 0; font-size: 0.83rem; font-weight: 600; text-align: center; }
@@ -726,7 +923,8 @@ body.qo-modal-open { overflow: hidden; }
   .qo-step1__line { font-size: clamp(1.1rem, 5vw, 1.5rem); gap: 10px; }
   .qo-step1__qty  { width: 80px; font-size: clamp(1.4rem, 6vw, 2rem); }
   .qo-type-btn    { min-width: 72px; padding: 14px 10px 12px; }
-  .qo-type-btn svg { width: 40px; height: 40px; }
+  .qo-type-btn svg,
+  .qo-type-btn img.qo-type-img { width: 48px; height: 48px; }
   .qo-cat__toolbar { position: static; }
 }
 
@@ -818,7 +1016,22 @@ body.qo-modal-open { overflow: hidden; }
     cap:        ['cap','casquette','hat','chapeau'],
   };
 
+  // Load uploaded category images from blocks
+  const blockIcons = [];
+  const typeIconMap = {};
+  try {
+    JSON.parse(document.getElementById('qo-icons-data').textContent)
+      .forEach(item => {
+        blockIcons.push(item);
+        if (item.url) typeIconMap[item.type] = item.url;
+      });
+  } catch(e) {}
+
   function getIcon(typeName) {
+    const handle = typeName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    if (typeIconMap[handle]) {
+      return `<img src="${typeIconMap[handle]}" alt="${typeName}" class="qo-type-img">`;
+    }
     const lower = typeName.toLowerCase();
     for (const [key, keywords] of Object.entries(ICON_KEYWORDS)) {
       if (keywords.some(kw => lower.includes(kw))) return ICONS[key];
@@ -832,7 +1045,7 @@ body.qo-modal-open { overflow: hidden; }
     'rouge':'#e53e3e','red':'#e53e3e','bleu':'#3b82f6','blue':'#3b82f6',
     'bleu ciel':'#87ceeb','sky blue':'#87ceeb','bleu marine':'#1a365d',
     'marine':'#1a365d','navy':'#1a365d','vert':'#16a34a','green':'#16a34a',
-    'jaune':'#ecc94b','yellow':'#ecc94b','orange':'#FF6500',
+    'jaune':'#ecc94b','yellow':'#ecc94b','orange':'#f97316',
     'gris':'#9ca3af','grey':'#9ca3af','gray':'#9ca3af',
     'gris chiné':'#c4c4c4','heather grey':'#c4c4c4','rose':'#f472b6','pink':'#f472b6',
     'violet':'#7c3aed','purple':'#7c3aed','marron':'#92400e','brown':'#92400e',
@@ -889,32 +1102,49 @@ body.qo-modal-open { overflow: hidden; }
   });
 
   /* ── Build Step 2 type icons ────────────────────── */
-  typeMap.forEach((rawLabel, handleized) => {
-    const btn = document.createElement('button');
-    btn.className = 'qo-type-btn';
-    btn.dataset.type = handleized;
-    btn.type = 'button';
-    btn.innerHTML = `${getIcon(rawLabel)}<span class="qo-type-btn__label">${rawLabel}</span>`;
-    btn.addEventListener('click', () => selectType(handleized, btn));
-    typesEl.appendChild(btn);
-  });
+  if (blockIcons.length > 0) {
+    // Use admin-configured icons from blocks
+    blockIcons.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'qo-type-btn';
+      btn.dataset.type = item.type;
+      btn.type = 'button';
+      const iconHtml = item.url
+        ? `<img src="${item.url}" alt="${item.label}" class="qo-type-img">`
+        : getIcon(item.label);
+      btn.innerHTML = `${iconHtml}<span class="qo-type-btn__label">${item.label}</span>`;
+      btn.addEventListener('click', () => selectType(item.type, btn));
+      typesEl.appendChild(btn);
+    });
+  } else {
+    // Fallback: build from product types found in the grid
+    typeMap.forEach((rawLabel, handleized) => {
+      const btn = document.createElement('button');
+      btn.className = 'qo-type-btn';
+      btn.dataset.type = handleized;
+      btn.type = 'button';
+      btn.innerHTML = `${getIcon(rawLabel)}<span class="qo-type-btn__label">${rawLabel}</span>`;
+      btn.addEventListener('click', () => selectType(handleized, btn));
+      typesEl.appendChild(btn);
+    });
+  }
 
   let activeType = '';
 
+  const step3TypeEl = document.getElementById('qo-step3-type');
+
   function selectType(handleized, btn) {
     if (activeType === handleized) {
-      // Deselect → show all
       activeType = '';
       typesEl.querySelectorAll('.qo-type-btn').forEach(b => b.classList.remove('is-active'));
+      if (step3TypeEl) step3TypeEl.textContent = 'PRODUIT';
     } else {
       activeType = handleized;
       typesEl.querySelectorAll('.qo-type-btn').forEach(b => b.classList.remove('is-active'));
       btn.classList.add('is-active');
+      const label = btn.querySelector('.qo-type-btn__label');
+      if (step3TypeEl) step3TypeEl.textContent = label ? label.textContent.toUpperCase() : handleized.toUpperCase();
     }
-
-    // Sync hidden category select
-    const typeSelect = document.getElementById('qo-filter-type');
-    typeSelect.value = activeType;
 
     applyFilters();
 
@@ -934,21 +1164,31 @@ body.qo-modal-open { overflow: hidden; }
     });
   }
 
-  // Populate category select (hidden, driven by Step 2 icons)
-  typeMap.forEach((rawLabel, handleized) => {
-    const typeSelect = document.getElementById('qo-filter-type');
-    const opt = document.createElement('option');
-    opt.value = handleized; opt.textContent = rawLabel;
-    typeSelect.appendChild(opt);
-  });
+  // Capitalize each word of a color name
+  function titleCase(s) {
+    return s.replace(/\b\w/g, c => c.toUpperCase());
+  }
 
-  addOptions('qo-filter-color', [...colorSet].sort(), v => v.charAt(0).toUpperCase() + v.slice(1));
+  addOptions('qo-filter-color', [...colorSet].sort(), titleCase);
   addOptions('qo-filter-size',  sortSizes([...sizeSet]));
-  addOptions('qo-filter-print', [...printSet].sort(), v => v.replace('print_', '').toUpperCase());
+
+  // Print filter: show only if data exists, clean up label
+  if (printSet.size > 0) {
+    addOptions('qo-filter-print', [...printSet].sort(), v =>
+      v.replace(/^print_/i, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    );
+  } else {
+    document.getElementById('qo-filter-print').style.display = 'none';
+  }
+
+  // Hide color/size filters if no data
+  if (colorSet.size === 0) document.getElementById('qo-filter-color').style.display = 'none';
+  if (sizeSet.size  === 0) document.getElementById('qo-filter-size').style.display  = 'none';
 
   /* ── Filter logic ───────────────────────────────── */
   function applyFilters() {
     const active = {};
+    if (activeType) active.type = activeType;
     selects.forEach(s => { if (s.value) active[s.dataset.filter] = s.value; });
 
     let visible = 0;
@@ -958,8 +1198,9 @@ body.qo-modal-open { overflow: hidden; }
         if (filter === 'type') {
           if (card.dataset.type !== value) { show = false; break; }
         } else {
-          const vals = card.dataset[filter].split('|||').map(v => v.trim().toLowerCase());
-          if (!vals.includes(value.toLowerCase())) { show = false; break; }
+          const raw = card.dataset[filter] || '';
+          const vals = raw.split('|||').map(v => v.trim().toLowerCase()).filter(Boolean);
+          if (vals.length === 0 || !vals.includes(value.toLowerCase())) { show = false; break; }
         }
       }
       card.style.display = show ? '' : 'none';
@@ -970,7 +1211,7 @@ body.qo-modal-open { overflow: hidden; }
     selects.forEach(s => s.classList.toggle('is-active', !!s.value));
   }
 
-  selects.forEach(s => s.addEventListener('change', applyFilters));
+  selects.forEach(s => s.addEventListener('change', () => applyFilters()));
 
   document.getElementById('qo-reset').addEventListener('click', () => {
     selects.forEach(s => { s.value = ''; s.classList.remove('is-active'); });
@@ -1211,19 +1452,45 @@ body.qo-modal-open { overflow: hidden; }
   }
 
   /* ── Event listeners ────────────────────────────── */
-  grid.addEventListener('click', e => {
-    const btn = e.target.closest('[data-open]');
-    if (btn) openModal(btn.dataset.open);
-  });
-
   closeBtn.addEventListener('click', closeModal);
   backdrop.addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-  /* Sync hero qty input with modal qty */
-  heroQty.addEventListener('change', () => {
-    if (parseInt(heroQty.value) < MIN_QTY) heroQty.value = MIN_QTY;
+  // Info buttons open modal
+  grid.addEventListener('click', e => {
+    const infoBtn = e.target.closest('.qo-cat__info-btn');
+    if (infoBtn) { e.stopPropagation(); openModal(infoBtn.dataset.product); return; }
+    // Clicking the card itself goes to product page
+    const card = e.target.closest('.qo-cat__card');
+    if (card && card.dataset.handle) {
+      const qty = parseInt(heroQty?.value) || MIN_QTY;
+      window.location.href = `/products/${card.dataset.handle}?quantity=${qty}`;
+    }
   });
+
+  /* Pre-fill qty from URL ?quantity param */
+  const urlQty = parseInt(new URLSearchParams(window.location.search).get('quantity'));
+  if (heroQty && urlQty >= MIN_QTY) {
+    heroQty.value = urlQty;
+  }
+
+  /* Update all product links when hero qty changes */
+  function updateProductLinks() {
+    const qty = parseInt(heroQty.value) || MIN_QTY;
+    document.querySelectorAll('[data-handle]').forEach(link => {
+      link.href = `/products/${link.dataset.handle}?quantity=${qty}`;
+    });
+  }
+
+  if (heroQty) {
+    heroQty.addEventListener('input', () => {
+      updateProductLinks();
+    });
+    heroQty.addEventListener('change', () => {
+      if (parseInt(heroQty.value) < MIN_QTY) heroQty.value = MIN_QTY;
+      updateProductLinks();
+    });
+  }
 
 })();
 </script>
@@ -1244,6 +1511,31 @@ body.qo-modal-open { overflow: hidden; }
       "id": "min_qty",
       "label": "Quantité minimum",
       "default": 12
+    }
+  ],
+  "blocks": [
+    {
+      "type": "type_icon",
+      "name": "Icône de catégorie",
+      "settings": [
+        {
+          "type": "text",
+          "id": "type_name",
+          "label": "Type de produit (Shopify)",
+          "info": "Doit correspondre exactement au type de produit dans Shopify (ex: T-shirt, Hoodie, Polo...)"
+        },
+        {
+          "type": "text",
+          "id": "type_label",
+          "label": "Étiquette affichée",
+          "info": "Optionnel — si vide, utilise le type de produit"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Image / icône"
+        }
+      ]
     }
   ],
   "presets": [{ "name": "QO — Catalogue Rapide" }]

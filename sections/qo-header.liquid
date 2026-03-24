@@ -12,16 +12,9 @@
       <a href="/pages/services" class="qo-header__link">
         {%- if request.locale.iso_code == 'fr' -%}Services{%- else -%}Services{%- endif -%}
       </a>
-      <div class="qo-header__dropdown">
-        <button class="qo-header__link qo-header__dropdown-toggle">
-          {%- if request.locale.iso_code == 'fr' -%}Soumission{%- else -%}Get a Quote{%- endif -%}
-          <svg class="qo-header__caret" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l5 5 5-5"/></svg>
-        </button>
-        <ul class="qo-header__dropdown-menu">
-          <li><a href="/pages/quick-order-rapide">{%- if request.locale.iso_code == 'fr' -%}Commande Rapide{%- else -%}Quick Order{%- endif -%}</a></li>
-          <li><a href="/pages/quick-order-personnalise">{%- if request.locale.iso_code == 'fr' -%}Commande Personnalisée{%- else -%}Custom Order{%- endif -%}</a></li>
-        </ul>
-      </div>
+      <a href="/pages/commande-rapide" class="qo-header__link">
+        {%- if request.locale.iso_code == 'fr' -%}Commande Rapide{%- else -%}Quick Order{%- endif -%}
+      </a>
     </nav>
 
     <!-- Logo : toujours centré -->
@@ -35,7 +28,7 @@
 
     <!-- Nav droite : desktop uniquement -->
     <nav class="qo-header__nav qo-header__nav--right">
-      <a href="/collections/all" class="qo-header__link">
+      <a href="/collections/boutique" class="qo-header__link">
         {%- if request.locale.iso_code == 'fr' -%}Boutique{%- else -%}Shop{%- endif -%}
       </a>
       <div class="qo-header__dropdown">
@@ -45,7 +38,8 @@
         </button>
         <ul class="qo-header__dropdown-menu">
           <li><a href="/pages/contact">Contact</a></li>
-          <li><a href="/pages/faq">Q&amp;A</a></li>
+          <li><a href="/pages/faq">FAQ</a></li>
+          <li><a href="/pages/politiques">{%- if request.locale.iso_code == 'fr' -%}Termes &amp; Politiques{%- else -%}Terms &amp; Policies{%- endif -%}</a></li>
         </ul>
       </div>
 
@@ -87,17 +81,17 @@
 <div class="qo-overlay" id="qo-overlay" aria-hidden="true">
   <nav class="qo-overlay__nav">
     <a href="/pages/services" class="qo-overlay__link">Services</a>
-    <a href="/pages/quick-order-rapide" class="qo-overlay__link">
+    <a href="/pages/commande-rapide" class="qo-overlay__link">
       {%- if request.locale.iso_code == 'fr' -%}Commande Rapide{%- else -%}Quick Order{%- endif -%}
     </a>
-    <a href="/pages/quick-order-personnalise" class="qo-overlay__link">
-      {%- if request.locale.iso_code == 'fr' -%}Commande Personnalisée{%- else -%}Custom Order{%- endif -%}
-    </a>
-    <a href="/collections/all" class="qo-overlay__link">
+    <a href="/collections/boutique" class="qo-overlay__link">
       {%- if request.locale.iso_code == 'fr' -%}Boutique{%- else -%}Shop{%- endif -%}
     </a>
     <a href="/pages/contact" class="qo-overlay__link">Contact</a>
-    <a href="/pages/faq" class="qo-overlay__link">Q&amp;A</a>
+    <a href="/pages/faq" class="qo-overlay__link">FAQ</a>
+    <a href="/pages/politiques" class="qo-overlay__link">
+      {%- if request.locale.iso_code == 'fr' -%}Termes &amp; Politiques{%- else -%}Terms &amp; Policies{%- endif -%}
+    </a>
 
     {%- if localization.available_languages.size > 1 -%}
       <div class="qo-lang qo-lang--mobile">
@@ -173,7 +167,7 @@
 {% stylesheet %}
   :root {
     --qo-h: 68px;
-    --qo-orange: #FF6500;
+    --qo-orange: #C9A96E;
   }
 
   /* ===== HEADER ===== */
@@ -459,7 +453,7 @@
   .qo-lang__btn:hover { color: #111; }
 
   .qo-lang__btn.is-active {
-    color: #FF6500;
+    color: #C9A96E;
     background: rgba(255,101,0,0.08);
   }
 
@@ -481,7 +475,7 @@
   }
 
   .qo-lang--mobile .qo-lang__btn.is-active {
-    color: #FF6500;
+    color: #C9A96E;
   }
 
   /* ===== RESPONSIVE ===== */
