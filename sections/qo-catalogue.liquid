@@ -1280,6 +1280,16 @@ body.qo-modal-open { overflow: hidden; }
 (function () {
   const MIN_QTY = window.qoCatConfig.minQty;
 
+  /* ── Lire la quantité depuis l'URL (?quantity=N) ─── */
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const qtyParam = parseInt(params.get('quantity'));
+    const heroInput = document.getElementById('qo-hero-qty');
+    if (heroInput && qtyParam && qtyParam >= 1) {
+      heroInput.value = qtyParam;
+    }
+  })();
+
   /* ── SVG icon library (line-art clothing icons) ───── */
   const ICONS = {
     tshirt: `<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
