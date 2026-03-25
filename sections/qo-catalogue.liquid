@@ -220,6 +220,8 @@
             "title": {{ product.title | json }},
             "type": {{ product.type | json }},
             "handle": {{ product.handle | json }},
+            "description": {{ product.description | json }},
+            "color_count": {{ p_colors | split: '|||' | size }},
             "price_min": {{ product.price_min }},
             "price_max": {{ product.price_max }},
             "images": [
@@ -265,12 +267,36 @@
 
 <!-- Modal -->
 <div class="qo-modal" id="qo-modal" role="dialog" aria-modal="true">
-  <button class="qo-modal__close" id="qo-modal-close" aria-label="Fermer" type="button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <path d="M18 6L6 18M6 6l12 12"/>
-    </svg>
-  </button>
-  <div class="qo-modal__body" id="qo-modal-body"></div>
+  <div class="qo-modal__inner">
+    <!-- Colonne gauche : image -->
+    <div class="qo-modal__left">
+      <div class="qo-modal__img-wrap">
+        <img class="qo-modal__img" id="qo-modal-img" src="" alt="">
+        <button class="qo-modal__img-nav qo-modal__img-prev is-hidden" id="qo-img-prev" type="button" aria-label="Image précédente">&#8249;</button>
+        <button class="qo-modal__img-nav qo-modal__img-next is-hidden" id="qo-img-next" type="button" aria-label="Image suivante">&#8250;</button>
+      </div>
+      <div class="qo-modal__color-bar" id="qo-modal-color-bar"></div>
+    </div>
+    <!-- Colonne droite : info -->
+    <div class="qo-modal__right">
+      <button class="qo-modal__close" id="qo-modal-close" aria-label="Fermer" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="qo-modal__body" id="qo-modal-body"></div>
+      <div class="qo-modal__size-guide" id="qo-modal-size-guide">
+        <p class="qo-modal__size-guide-title">Size Guide</p>
+        <p class="qo-modal__size-guide-sub">Measure under your arms, around your chest</p>
+        <table class="qo-modal__size-table">
+          <tr><td>XS</td><td>S</td><td>M</td><td>L</td><td>XL</td><td>2XL</td><td>3XL</td><td>4XL</td><td>5XL</td></tr>
+          <tr><td>34</td><td>36</td><td>40</td><td>44</td><td>48</td><td>52</td><td>56</td><td>60</td><td>62</td></tr>
+        </table>
+        <p class="qo-modal__size-guide-unit">In CM</p>
+      </div>
+      <div class="qo-modal__actions" id="qo-modal-actions"></div>
+    </div>
+  </div>
 </div>
 
 <script type="application/json" id="qo-icons-data">
@@ -959,92 +985,209 @@
 
 .qo-backdrop.is-open { opacity: 1; visibility: visible; }
 
+/* ══ Modal — layout 2 colonnes ══════════════════════ */
 .qo-modal {
-  position: fixed; top: 0; right: 0; bottom: 0; z-index: 300;
-  width: 500px; max-width: 100%;
-  background: #fff; overflow-y: auto;
-  transform: translateX(100%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: -8px 0 32px rgba(0,0,0,0.12);
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
-.qo-modal.is-open { transform: translateX(0); }
+.qo-modal.is-open { opacity: 1; pointer-events: all; }
 
+.qo-modal__inner {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1040px;
+  max-height: 90vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+  transform: scale(0.96);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.qo-modal.is-open .qo-modal__inner { transform: scale(1); }
+
+/* Bouton fermer */
 .qo-modal__close {
-  position: sticky; top: 0; float: right;
-  margin: 16px 16px 0 0; z-index: 10;
-  background: #f3f3f3; border: none; border-radius: 50%;
-  width: 36px; height: 36px;
+  position: absolute; top: 14px; right: 14px; z-index: 20;
+  background: #C9A96E; border: none; border-radius: 8px;
+  width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: background 0.2s;
 }
+.qo-modal__close:hover { background: #b8902a; }
+.qo-modal__close svg { width: 16px; height: 16px; stroke: #fff; }
 
-.qo-modal__close:hover { background: #e0e0e0; }
-.qo-modal__close svg { width: 16px; height: 16px; }
-.qo-modal__body { padding: 16px 24px 48px; clear: both; }
-
-.qo-modal__img {
-  width: 100%; aspect-ratio: 1/1; object-fit: cover;
-  border-radius: 10px; margin-bottom: 20px; background: #f2f2f2;
-  display: block;
+/* Colonne gauche — image */
+.qo-modal__left {
+  position: relative;
+  background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
+.qo-modal__img-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.qo-modal__img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.2s;
+}
+
+.qo-modal__img-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.55); border: none; border-radius: 50%;
+  width: 40px; height: 40px; color: #fff; font-size: 1.2rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.15s;
+  z-index: 5;
+}
+.qo-modal__img-nav:hover { background: rgba(0,0,0,0.8); }
+.qo-modal__img-prev { left: 10px; }
+.qo-modal__img-next { right: 10px; }
+.qo-modal__img-nav.is-hidden { display: none; }
+
+.qo-modal__color-bar {
+  background: #f7f7f7;
+  border-top: 1px solid #e0e0e0;
+  padding: 10px 16px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #333;
+  text-align: center;
+}
+
+/* Colonne droite — info */
+.qo-modal__right {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.qo-modal__body { padding: 28px 28px 0; }
+
 .qo-modal__type {
-  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.1em; color: #C9A96E; margin: 0 0 4px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #C9A96E; margin: 0 0 6px;
 }
 
 .qo-modal__title {
-  font-size: 1.2rem; font-weight: 800; color: #111;
-  margin: 0 0 8px; line-height: 1.2;
+  font-size: 1.35rem; font-weight: 900; color: #111;
+  text-transform: uppercase; margin: 0 0 16px; line-height: 1.15;
 }
+
+.qo-modal__desc {
+  font-size: 0.88rem; font-weight: 700; color: #222;
+  line-height: 1.65; margin: 0 0 4px;
+}
+
+.qo-modal__desc p { margin: 0 0 6px; }
+.qo-modal__desc ul, .qo-modal__desc ol { padding-left: 1.2em; margin: 0 0 6px; }
+.qo-modal__desc li { margin-bottom: 4px; }
+
+/* Guide de taille */
+.qo-modal__size-guide {
+  background: #111;
+  color: #fff;
+  padding: 20px 28px;
+  margin-top: 20px;
+}
+
+.qo-modal__size-guide-title {
+  font-size: 1.1rem; font-weight: 900; text-transform: uppercase;
+  letter-spacing: 0.1em; text-align: center; margin: 0 0 6px;
+}
+
+.qo-modal__size-guide-sub {
+  font-size: 0.78rem; font-weight: 400; text-align: center;
+  color: rgba(255,255,255,0.7); margin: 0 0 16px;
+}
+
+.qo-modal__size-table {
+  width: 100%; border-collapse: collapse; margin-bottom: 10px;
+}
+
+.qo-modal__size-table td {
+  border: 1.5px solid rgba(255,255,255,0.25);
+  text-align: center;
+  padding: 8px 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.qo-modal__size-table tr:first-child td { color: rgba(255,255,255,0.6); }
+.qo-modal__size-table tr:last-child td { color: #fff; }
+
+.qo-modal__size-guide-unit {
+  font-size: 0.75rem; font-weight: 700; text-align: center;
+  color: rgba(255,255,255,0.5); letter-spacing: 0.1em; text-transform: uppercase;
+}
+
+/* Options + ATC */
+.qo-modal__actions { padding: 20px 28px 28px; }
 
 .qo-modal__price {
-  font-size: 1.05rem; font-weight: 800; color: #111; margin: 0 0 20px;
+  font-size: 1rem; font-weight: 800; color: #111; margin: 0 0 16px;
 }
+.qo-modal__price span { font-size: 0.75rem; font-weight: 500; color: #888; }
 
-.qo-modal__price span { font-size: 0.78rem; font-weight: 500; color: #888; }
-
-.qo-modal__divider { border: none; border-top: 1px solid #eee; margin: 20px 0; }
-
-.qo-modal__option-group { margin-bottom: 18px; }
+.qo-modal__divider { border: none; border-top: 1px solid #eee; margin: 16px 0; }
+.qo-modal__option-group { margin-bottom: 16px; }
 
 .qo-modal__option-label {
-  font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.06em; color: #555; margin: 0 0 10px;
+  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; color: #555; margin: 0 0 8px;
   display: flex; align-items: center; gap: 8px;
 }
 
 .qo-modal__option-selected {
-  font-size: 0.8rem; color: #555; font-style: italic; font-weight: 400;
-  text-transform: none; letter-spacing: 0;
+  font-size: 0.75rem; color: #555; font-style: italic;
+  font-weight: 400; text-transform: none; letter-spacing: 0;
 }
 
 .qo-modal__swatches { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .qo-modal__swatch-btn {
-  width: 30px; height: 30px; border-radius: 50%;
+  width: 28px; height: 28px; border-radius: 50%;
   border: 2px solid #e0e0e0; cursor: pointer;
   transition: border-color 0.15s, transform 0.15s;
 }
-
 .qo-modal__swatch-btn:hover { transform: scale(1.15); border-color: #aaa; }
 .qo-modal__swatch-btn.is-active { border-color: #C9A96E; box-shadow: 0 0 0 2px #C9A96E; }
 
-.qo-modal__sizes { display: flex; flex-wrap: wrap; gap: 7px; }
+.qo-modal__sizes { display: flex; flex-wrap: wrap; gap: 6px; }
 
 .qo-modal__size-btn {
-  padding: 7px 13px; border: 1.5px solid #ddd; border-radius: 7px;
-  background: #fff; font-size: 0.83rem; font-weight: 700; color: #333;
+  padding: 6px 11px; border: 1.5px solid #ddd; border-radius: 7px;
+  background: #fff; font-size: 0.8rem; font-weight: 700; color: #333;
   cursor: pointer; transition: all 0.15s;
 }
-
 .qo-modal__size-btn:hover { border-color: #111; }
 .qo-modal__size-btn.is-active { background: #111; border-color: #111; color: #fff; }
 .qo-modal__size-btn.is-unavailable { opacity: 0.35; text-decoration: line-through; cursor: not-allowed; }
 
-.qo-modal__qty-group { margin-bottom: 20px; }
-.qo-modal__qty-min { font-weight: 500; color: #C9A96E; text-transform: none; letter-spacing: 0; font-size: 0.76rem; }
+.qo-modal__qty-group { margin-bottom: 16px; }
+.qo-modal__qty-min { font-weight: 500; color: #C9A96E; text-transform: none; letter-spacing: 0; font-size: 0.73rem; }
 
 .qo-modal__qty-wrap {
   display: flex; align-items: center;
@@ -1053,41 +1196,50 @@
 }
 
 .qo-modal__qty-btn {
-  background: #f5f5f5; border: none;
-  width: 44px; height: 44px;
-  font-size: 1.2rem; font-weight: 700; color: #333;
+  background: #f5f5f5; border: none; width: 40px; height: 40px;
+  font-size: 1.1rem; font-weight: 700; color: #333;
   cursor: pointer; transition: background 0.15s;
   display: flex; align-items: center; justify-content: center;
 }
-
 .qo-modal__qty-btn:hover { background: #e8e8e8; }
 
 .qo-modal__qty-input {
-  width: 64px; border: none;
+  width: 56px; border: none;
   border-left: 1.5px solid #ddd; border-right: 1.5px solid #ddd;
-  text-align: center; font-size: 1rem; font-weight: 700; color: #111;
-  height: 44px; outline: none; -moz-appearance: textfield;
+  text-align: center; font-size: 0.95rem; font-weight: 700; color: #111;
+  height: 40px; outline: none; -moz-appearance: textfield;
 }
-
 .qo-modal__qty-input::-webkit-outer-spin-button,
 .qo-modal__qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
 
 .qo-modal__atc {
-  width: 100%; padding: 16px;
+  width: 100%; padding: 14px;
   background: #C9A96E; color: #fff; border: none; border-radius: 10px;
-  font-size: 0.9rem; font-weight: 800;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  cursor: pointer; transition: background 0.2s, transform 0.15s;
+  font-size: 0.88rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; cursor: pointer; transition: background 0.2s, transform 0.15s;
 }
-
 .qo-modal__atc:hover:not(:disabled) { background: #b8902a; transform: translateY(-1px); }
 .qo-modal__atc:disabled { background: #ccc; cursor: not-allowed; transform: none; }
 
-.qo-modal__feedback { margin: 12px 0 0; font-size: 0.83rem; font-weight: 600; text-align: center; }
+.qo-modal__feedback { margin: 10px 0 0; font-size: 0.8rem; font-weight: 600; text-align: center; }
 .qo-modal__feedback--success { color: #16a34a; }
 .qo-modal__feedback--error   { color: #dc2626; }
 
 body.qo-modal-open { overflow: hidden; }
+
+/* Mobile */
+@media (max-width: 749px) {
+  .qo-modal { padding: 0; align-items: flex-end; }
+  .qo-modal__inner {
+    grid-template-columns: 1fr;
+    max-height: 92dvh;
+    border-radius: 16px 16px 0 0;
+    transform: translateY(20px);
+  }
+  .qo-modal.is-open .qo-modal__inner { transform: translateY(0); }
+  .qo-modal__left { max-height: 45vw; }
+  .qo-modal__img { object-position: top; }
+}
 
 /* Responsive */
 @media (max-width: 749px) {
@@ -1535,10 +1687,16 @@ body.qo-modal-open { overflow: hidden; }
   applyFilters();
 
   /* ── Modal ──────────────────────────────────────── */
-  const modal     = document.getElementById('qo-modal');
-  const backdrop  = document.getElementById('qo-backdrop');
-  const closeBtn  = document.getElementById('qo-modal-close');
-  const modalBody = document.getElementById('qo-modal-body');
+  const modal      = document.getElementById('qo-modal');
+  const backdrop   = document.getElementById('qo-backdrop');
+  const closeBtn   = document.getElementById('qo-modal-close');
+  const modalBody  = document.getElementById('qo-modal-body');
+  const modalActions = document.getElementById('qo-modal-actions');
+  const modalImg   = document.getElementById('qo-modal-img');
+  const imgPrev    = document.getElementById('qo-img-prev');
+  const imgNext    = document.getElementById('qo-img-next');
+  const colorBar   = document.getElementById('qo-modal-color-bar');
+  let   imgIndex   = 0;
 
   let currentProduct  = null;
   let selectedOptions = {};
@@ -1560,10 +1718,21 @@ body.qo-modal-open { overflow: hidden; }
     document.body.classList.remove('qo-modal-open');
   }
 
+  function showImg(index) {
+    const imgs = currentProduct.images;
+    if (!imgs || imgs.length === 0) return;
+    imgIndex = Math.max(0, Math.min(index, imgs.length - 1));
+    modalImg.src = imgs[imgIndex];
+    imgPrev.classList.toggle('is-hidden', imgIndex === 0);
+    imgNext.classList.toggle('is-hidden', imgIndex >= imgs.length - 1);
+  }
+
+  imgPrev.addEventListener('click', () => showImg(imgIndex - 1));
+  imgNext.addEventListener('click', () => showImg(imgIndex + 1));
+
   function renderModal() {
-    const p    = currentProduct;
-    const img  = p.images[0] || '';
-    const qty  = parseInt(heroQty.value) || MIN_QTY;
+    const p   = currentProduct;
+    const qty = parseInt(heroQty.value) || MIN_QTY;
 
     const colorOption  = p.options.find(o => ['couleur','color','colour'].includes(o.name.toLowerCase()));
     const sizeOption   = p.options.find(o => ['taille','size'].includes(o.name.toLowerCase()));
@@ -1573,71 +1742,67 @@ body.qo-modal-open { overflow: hidden; }
       ? `À partir de ${formatMoney(p.price_min)}`
       : formatMoney(p.price_min);
 
-    let html = `
-      ${img ? `<img class="qo-modal__img" src="${img}" alt="${p.title}" id="qo-modal-img">` : ''}
+    // Image
+    imgIndex = 0;
+    showImg(0);
+    modalImg.alt = p.title;
+
+    // Barre couleurs
+    if (p.color_count > 0) {
+      colorBar.textContent = `Available in ${p.color_count} colour${p.color_count > 1 ? 's' : ''}`;
+      colorBar.style.display = '';
+    } else {
+      colorBar.style.display = 'none';
+    }
+
+    // Corps : type + titre + description
+    let bodyHtml = `
       ${p.type ? `<p class="qo-modal__type">${p.type}</p>` : ''}
       <h2 class="qo-modal__title">${p.title}</h2>
-      <p class="qo-modal__price" id="qo-modal-price">${priceHtml} <span>/ pièce</span></p>
-      <hr class="qo-modal__divider">
+      ${p.description ? `<div class="qo-modal__desc">${p.description}</div>` : ''}
     `;
+    modalBody.innerHTML = bodyHtml;
+
+    // Actions : options + qty + ATC
+    let actHtml = `<p class="qo-modal__price" id="qo-modal-price">${priceHtml} <span>/ pièce</span></p><hr class="qo-modal__divider">`;
 
     if (colorOption) {
-      html += `
+      actHtml += `
         <div class="qo-modal__option-group">
-          <p class="qo-modal__option-label">
-            ${colorOption.name}
-            <span class="qo-modal__option-selected" id="qo-color-label"></span>
-          </p>
+          <p class="qo-modal__option-label">${colorOption.name} <span class="qo-modal__option-selected" id="qo-color-label"></span></p>
           <div class="qo-modal__swatches" id="qo-opt-${colorOption.name}">
             ${colorOption.values.map(val => {
               const bg = getColor(val);
               const isLight = ['blanc','white','écru','ecru','beige','sable','sand'].some(w => val.toLowerCase().includes(w));
-              return `<button
-                class="qo-modal__swatch-btn"
-                data-option="${colorOption.name}"
-                data-value="${val}"
-                style="background:${bg}${isLight ? ';border-color:#ccc' : ''}"
-                title="${val}"
-                type="button"
-              ></button>`;
+              return `<button class="qo-modal__swatch-btn" data-option="${colorOption.name}" data-value="${val}" style="background:${bg}${isLight ? ';border-color:#ccc' : ''}" title="${val}" type="button"></button>`;
             }).join('')}
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     if (sizeOption) {
-      html += `
+      actHtml += `
         <div class="qo-modal__option-group">
           <p class="qo-modal__option-label">${sizeOption.name}</p>
           <div class="qo-modal__sizes">
-            ${sortSizes(sizeOption.values).map(val => `
-              <button class="qo-modal__size-btn" data-option="${sizeOption.name}" data-value="${val}" type="button">${val}</button>
-            `).join('')}
+            ${sortSizes(sizeOption.values).map(val => `<button class="qo-modal__size-btn" data-option="${sizeOption.name}" data-value="${val}" type="button">${val}</button>`).join('')}
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     otherOptions.forEach(option => {
-      html += `
+      actHtml += `
         <div class="qo-modal__option-group">
           <p class="qo-modal__option-label">${option.name}</p>
           <div class="qo-modal__sizes">
-            ${option.values.map(val => `
-              <button class="qo-modal__size-btn" data-option="${option.name}" data-value="${val}" type="button">${val}</button>
-            `).join('')}
+            ${option.values.map(val => `<button class="qo-modal__size-btn" data-option="${option.name}" data-value="${val}" type="button">${val}</button>`).join('')}
           </div>
-        </div>
-      `;
+        </div>`;
     });
 
-    html += `
-      <hr class="qo-modal__divider">
+    actHtml += `
       <div class="qo-modal__qty-group">
-        <p class="qo-modal__option-label">
-          Quantité <span class="qo-modal__qty-min">(min. ${MIN_QTY} pièces)</span>
-        </p>
+        <p class="qo-modal__option-label">Quantité <span class="qo-modal__qty-min">(min. ${MIN_QTY} pièces)</span></p>
         <div class="qo-modal__qty-wrap">
           <button class="qo-modal__qty-btn" id="qo-qty-dec" type="button">−</button>
           <input class="qo-modal__qty-input" id="qo-qty-input" type="number" value="${Math.max(qty, MIN_QTY)}" min="${MIN_QTY}" step="1">
@@ -1648,11 +1813,10 @@ body.qo-modal-open { overflow: hidden; }
       <p class="qo-modal__feedback" id="qo-feedback"></p>
     `;
 
-    modalBody.innerHTML = html;
-    modal.scrollTop = 0;
+    modalActions.innerHTML = actHtml;
 
     /* Option events */
-    modalBody.querySelectorAll('[data-option]').forEach(btn => {
+    modalActions.querySelectorAll('[data-option]').forEach(btn => {
       btn.addEventListener('click', () => {
         const optName = btn.dataset.option;
         const val     = btn.dataset.value;
