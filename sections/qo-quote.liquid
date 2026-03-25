@@ -1,4 +1,11 @@
-<div class="qo-quote color-{{ section.settings.color_scheme }}">
+<div class="qo-quote"
+  {%- if section.settings.bg_image != blank -%}
+    style="background-image: url('{{ section.settings.bg_image | image_url: width: 1800 }}'); background-size: cover; background-position: center;"
+  {%- endif -%}
+>
+  {%- if section.settings.bg_image != blank -%}
+    <div class="qo-quote__overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>
+  {%- endif -%}
   <div class="qo-quote__inner">
     <div class="qo-quote__form">
       <span class="qo-quote__label">{{ section.settings.prefix }}</span>
@@ -39,12 +46,22 @@
 
 {% stylesheet %}
   .qo-quote {
+    position: relative;
     background: #111;
     padding: 80px 24px;
     text-align: center;
   }
 
+  .qo-quote__overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    pointer-events: none;
+  }
+
   .qo-quote__inner {
+    position: relative;
+    z-index: 1;
     max-width: 800px;
     margin: 0 auto;
   }
@@ -104,7 +121,7 @@
   }
 
   .qo-quote__note {
-    color: #666;
+    color: rgba(255,255,255,0.5);
     font-size: 0.85rem;
     margin: 20px 0 0;
   }
@@ -118,7 +135,26 @@
     { "type": "text", "id": "suffix", "label": "Texte après le nombre", "default": "vêtements" },
     { "type": "text", "id": "btn_label", "label": "Bouton — Texte", "default": "Commande en ligne" },
     { "type": "url", "id": "quote_link", "label": "Bouton — Lien" },
-    { "type": "text", "id": "note", "label": "Note sous le bouton", "default": "Minimum 12 pièces par commande • Réponse sous 24h" }
+    { "type": "text", "id": "note", "label": "Note sous le bouton", "default": "Minimum 12 pièces par commande • Réponse sous 24h" },
+    {
+      "type": "header",
+      "content": "Arrière-plan"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Image d'arrière-plan"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Opacité du voile sombre",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 60,
+      "unit": "%"
+    }
   ],
   "presets": [{ "name": "QO — Générateur devis" }]
 }
