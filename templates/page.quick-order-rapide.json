@@ -12,10 +12,26 @@
     "qo_catalogue": {
       "type": "qo-catalogue",
       "blocks": {
+        "type_icon_QWMerW": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "T-Shirt",
+            "type_label": "",
+            "icon": "shopify://shop_images/t-shirt_2774424.png"
+          }
+        },
+        "type_icon_3xVMLP": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "Long Sleeves",
+            "type_label": "",
+            "icon": "shopify://shop_images/long-sleeves_2774427.png"
+          }
+        },
         "type_icon_mWNrdm": {
           "type": "type_icon",
           "settings": {
-            "type_name": "t-shirt",
+            "type_name": "Sweaters",
             "type_label": "",
             "icon": "shopify://shop_images/sweatshirt.png"
           }
@@ -23,7 +39,7 @@
         "type_icon_EinbaW": {
           "type": "type_icon",
           "settings": {
-            "type_name": "hoodie",
+            "type_name": "Hoodies",
             "type_label": "",
             "icon": "shopify://shop_images/hoodies.png"
           }
@@ -31,7 +47,7 @@
         "type_icon_9hknF9": {
           "type": "type_icon",
           "settings": {
-            "type_name": "polo",
+            "type_name": "polos",
             "type_label": "",
             "icon": "shopify://shop_images/polos.png"
           }
@@ -39,7 +55,7 @@
         "type_icon_g78mty": {
           "type": "type_icon",
           "settings": {
-            "type_name": "jacket",
+            "type_name": "jackets",
             "type_label": "",
             "icon": "shopify://shop_images/jacket.png"
           }
@@ -55,37 +71,39 @@
         "type_icon_diqkY6": {
           "type": "type_icon",
           "settings": {
-            "type_name": "Cap",
+            "type_name": "Caps",
             "type_label": "",
             "icon": "shopify://shop_images/cap.png"
-          }
-        },
-        "type_icon_tiX4KR": {
-          "type": "type_icon",
-          "settings": {
-            "type_name": "Tote bag",
-            "type_label": "",
-            "icon": "shopify://shop_images/tote_bag.png"
           }
         },
         "type_icon_z48ydt": {
           "type": "type_icon",
           "settings": {
-            "type_name": "Beanie",
+            "type_name": "Beanies",
             "type_label": "",
             "icon": "shopify://shop_images/beanie.png"
+          }
+        },
+        "type_icon_tiX4KR": {
+          "type": "type_icon",
+          "settings": {
+            "type_name": "Tote bags",
+            "type_label": "",
+            "icon": "shopify://shop_images/tote_bag.png"
           }
         }
       },
       "block_order": [
+        "type_icon_QWMerW",
+        "type_icon_3xVMLP",
         "type_icon_mWNrdm",
         "type_icon_EinbaW",
         "type_icon_9hknF9",
         "type_icon_g78mty",
         "type_icon_PpppLj",
         "type_icon_diqkY6",
-        "type_icon_tiX4KR",
-        "type_icon_z48ydt"
+        "type_icon_z48ydt",
+        "type_icon_tiX4KR"
       ],
       "settings": {
         "collection_handle": "all",

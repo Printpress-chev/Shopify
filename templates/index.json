@@ -9,6 +9,145 @@
  */
 {
   "sections": {
+    "qo_hero": {
+      "type": "qo-hero",
+      "settings": {
+        "video": "",
+        "overlay_opacity": 50,
+        "eyebrow": "Impression personnalisée • Vente en gros",
+        "eyebrow_size": 13,
+        "title": "Impression qualité sur vêtements",
+        "title_font": "sans_serif_n7",
+        "title_size": 80,
+        "btn1_label": "Commander en ligne",
+        "btn1_link": "",
+        "btn2_label": "Devis personnalisé",
+        "btn2_link": ""
+      }
+    },
+    "qo_notice": {
+      "type": "qo-notice",
+      "settings": {
+        "text": "À noter : nous avons un minimum de commande de 12 pièces par design."
+      }
+    },
+    "qo_why": {
+      "type": "qo-why-us",
+      "settings": {
+        "heading": "Pourquoi choisir PrintPress ?",
+        "card1_video": "",
+        "card1_title": "Qualité Primée",
+        "card1_text": "Impressions durables et vibrantes qui résistent aux lavages. Nos clients reviennent toujours.",
+        "card2_video": "",
+        "card2_title": "Service Personnalisé",
+        "card2_text": "Un interlocuteur dédié pour chaque commande. Nous vous accompagnons de A à Z.",
+        "card3_video": "",
+        "card3_title": "Commande Facile",
+        "card3_text": "Obtenez un devis en quelques clics. Livraison rapide dès 12 pièces."
+      }
+    },
+    "qo_services": {
+      "type": "qo-services",
+      "settings": {
+        "heading": "Nos techniques d impression",
+        "s1_video": "",
+        "s1_title": "Sérigraphie",
+        "s1_caption": "Idéale pour les grandes séries. Couleurs vives et durables sur tous types de vêtements.",
+        "s1_link": "",
+        "s2_video": "",
+        "s2_title": "Broderie",
+        "s2_caption": "Fini haut de gamme pour logos et designs. Texture et prestige sur vêtements de travail ou collections.",
+        "s2_link": "",
+        "s3_video": "",
+        "s3_title": "DTF (Direct To Film)",
+        "s3_caption": "Full couleur sans minimum élevé. Parfait pour petites séries et designs complexes.",
+        "s3_link": ""
+      }
+    },
+    "qo_quote": {
+      "type": "qo-quote",
+      "settings": {
+        "prefix": "J'ai besoin de",
+        "suffix": "vêtements",
+        "btn_label": "Obtenir mon devis",
+        "quote_link": "shopify://pages/catalogue",
+        "note": "Minimum 12 pièces par commande • Réponse sous 24h"
+      }
+    },
+    "qo_brands": {
+      "type": "qo-brands",
+      "blocks": {
+        "brand_MnMjYM": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/Under_Armour_High_Brand.jpg",
+            "name": ""
+          }
+        },
+        "brand_8Vb3dT": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/American_Apparel_High_Brand.jpg",
+            "name": ""
+          }
+        },
+        "brand_tPnNy7": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/Champion_High_Brand.jpg",
+            "name": ""
+          }
+        },
+        "brand_jfygAg": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/M_O_High_Brand.jpg",
+            "name": ""
+          }
+        },
+        "brand_8Ppkmi": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/Richardson_High_Brand.jpg",
+            "name": ""
+          }
+        },
+        "brand_UBy9yj": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/Adidas_High_Brand.jpg",
+            "name": ""
+          }
+        },
+        "brand_HpDf6J": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/Comfort_Colors_High_Brand.jpg",
+            "name": ""
+          }
+        },
+        "brand_narRpV": {
+          "type": "brand",
+          "settings": {
+            "logo": "shopify://shop_images/Gildan_High_Brand.jpg",
+            "name": ""
+          }
+        }
+      },
+      "block_order": [
+        "brand_MnMjYM",
+        "brand_8Vb3dT",
+        "brand_tPnNy7",
+        "brand_jfygAg",
+        "brand_8Ppkmi",
+        "brand_UBy9yj",
+        "brand_HpDf6J",
+        "brand_narRpV"
+      ],
+      "settings": {
+        "label": "Ils nous font confiance"
+      }
+    },
     "ss_back_to_top_Cc3PUN": {
       "type": "ss-back-to-top",
       "name": "SS - Back to top #3",
@@ -27,57 +166,6 @@
         "progress_active_color": "#000000",
         "arrow_color": "#000000",
         "arrow_hover_color": "#ffffff"
-      }
-    },
-    "qo_hero": {
-      "type": "qo-hero",
-      "settings": {
-        "eyebrow": "Impression personnalisée • Vente en gros",
-        "title": "Impression qualité sur vêtements",
-        "btn1_label": "Commander en ligne",
-        "btn2_label": "Devis personnalisé"
-      }
-    },
-    "qo_notice": {
-      "type": "qo-notice",
-      "settings": {
-        "text": "À noter : nous avons un minimum de commande de 12 pièces par design."
-      }
-    },
-    "qo_why": {
-      "type": "qo-why-us",
-      "settings": {
-        "heading": "Pourquoi choisir PrintPress ?",
-        "card1_title": "Qualité Primée",
-        "card1_text": "Impressions durables et vibrantes qui résistent aux lavages. Nos clients reviennent toujours.",
-        "card2_title": "Service Personnalisé",
-        "card2_text": "Un interlocuteur dédié pour chaque commande. Nous vous accompagnons de A à Z.",
-        "card3_title": "Commande Facile",
-        "card3_text": "Obtenez un devis en quelques clics. Livraison rapide dès 12 pièces."
-      }
-    },
-    "qo_services": {
-      "type": "qo-services",
-      "settings": {
-        "heading": "Nos techniques d impression",
-        "s1_title": "Sérigraphie",
-        "s2_title": "Broderie",
-        "s3_title": "DTF (Direct To Film)"
-      }
-    },
-    "qo_quote": {
-      "type": "qo-quote",
-      "settings": {
-        "prefix": "J ai besoin de",
-        "suffix": "vêtements",
-        "btn_label": "Obtenir mon devis",
-        "note": "Minimum 12 pièces par commande • Réponse sous 24h"
-      }
-    },
-    "qo_brands": {
-      "type": "qo-brands",
-      "settings": {
-        "label": "Ils nous font confiance"
       }
     }
   },
