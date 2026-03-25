@@ -156,23 +156,34 @@
         data-product="{{ product.id }}"
         data-handle="{{ product.handle }}"
       >
-        {%- assign lifestyle_img = product.images[1] -%}
-        <div class="qo-cat__card-img{% if lifestyle_img %} has-lifestyle{% endif %}">
-          {%- if product.featured_image -%}
+        {%- comment -%}
+          Trouver l'image lifestyle = première image NON liée à une variante (Image Src du CSV)
+          Les images de variantes (Variant Image) sont liées à des variantes spécifiques.
+        {%- endcomment -%}
+        {%- assign lifestyle_img = nil -%}
+        {%- for img in product.images -%}
+          {%- assign is_variant_img = false -%}
+          {%- for variant in product.variants -%}
+            {%- if variant.image and variant.image.id == img.id -%}
+              {%- assign is_variant_img = true -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- unless is_variant_img -%}
+            {%- assign lifestyle_img = img -%}
+            {%- break -%}
+          {%- endunless -%}
+        {%- endfor -%}
+        {%- if lifestyle_img == nil -%}{%- assign lifestyle_img = product.featured_image -%}{%- endif -%}
+
+        <div class="qo-cat__card-img">
+          {%- if lifestyle_img -%}
             <img
               class="qo-cat__img-main"
-              src="{{ product.featured_image | image_url: width: 600 }}"
+              src="{{ lifestyle_img | image_url: width: 600 }}"
               alt="{{ product.title | escape }}"
               loading="lazy"
             >
-            {%- if lifestyle_img -%}
-              <img
-                class="qo-cat__img-lifestyle"
-                src="{{ lifestyle_img | image_url: width: 600 }}"
-                alt="{{ product.title | escape }} — style"
-                loading="lazy"
-              >
-            {%- endif -%}
           {%- else -%}
             <div class="qo-cat__no-img">
               <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -224,8 +235,9 @@
             "color_count": {{ p_colors | split: '|||' | size }},
             "price_min": {{ product.price_min }},
             "price_max": {{ product.price_max }},
+            "lifestyle": {{ lifestyle_img | image_url: width: 700 | json }},
             "images": [
-              {%- for img in product.images limit: 4 -%}
+              {%- for img in product.images limit: 6 -%}
                 {{ img | image_url: width: 700 | json }}{% unless forloop.last %},{% endunless %}
               {%- endfor -%}
             ],
@@ -1725,12 +1737,16 @@ body.qo-modal-open { overflow: hidden; }
   }
 
   function showImg(index) {
-    const imgs = currentProduct.images;
-    if (!imgs || imgs.length === 0) return;
-    imgIndex = Math.max(0, Math.min(index, imgs.length - 1));
-    modalImg.src = imgs[imgIndex];
+    const p = currentProduct;
+    // Construire la liste : lifestyle en premier, puis les autres images
+    const allImgs = [];
+    if (p.lifestyle) allImgs.push(p.lifestyle);
+    (p.images || []).forEach(img => { if (img !== p.lifestyle) allImgs.push(img); });
+    if (allImgs.length === 0) return;
+    imgIndex = Math.max(0, Math.min(index, allImgs.length - 1));
+    modalImg.src = allImgs[imgIndex];
     imgPrev.classList.toggle('is-hidden', imgIndex === 0);
-    imgNext.classList.toggle('is-hidden', imgIndex >= imgs.length - 1);
+    imgNext.classList.toggle('is-hidden', imgIndex >= allImgs.length - 1);
   }
 
   imgPrev.addEventListener('click', () => showImg(imgIndex - 1));
