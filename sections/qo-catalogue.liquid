@@ -1204,79 +1204,6 @@
 .qo-modal__size-btn.is-active { background: #111; border-color: #111; color: #fff; }
 .qo-modal__size-btn.is-unavailable { opacity: 0.35; text-decoration: line-through; cursor: not-allowed; }
 
-/* Per-size qty grid */
-.qo-modal__size-qty-rows {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px 16px;
-  margin-bottom: 12px;
-}
-
-.qo-size-qty-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.qo-size-qty-label {
-  font-size: 0.78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #333;
-  min-width: 30px;
-}
-
-.qo-size-qty-wrap {
-  display: flex;
-  align-items: center;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.qo-size-qty-btn {
-  background: #f5f5f5;
-  border: none;
-  width: 28px;
-  height: 30px;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #333;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s;
-}
-.qo-size-qty-btn:hover { background: #e8e8e8; }
-
-.qo-size-qty-input {
-  width: 40px;
-  border: none;
-  border-left: 1.5px solid #ddd;
-  border-right: 1.5px solid #ddd;
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #111;
-  height: 30px;
-  outline: none;
-  -moz-appearance: textfield;
-}
-.qo-size-qty-input::-webkit-outer-spin-button,
-.qo-size-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-.qo-modal__size-total {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #555;
-  text-align: right;
-  margin: 4px 0 16px;
-}
-.qo-modal__size-total strong { color: #C9A96E; }
-
-/* Single qty (no size) */
 .qo-modal__qty-group { margin-bottom: 16px; }
 .qo-modal__qty-min { font-weight: 500; color: #C9A96E; text-transform: none; letter-spacing: 0; font-size: 0.73rem; }
 
@@ -1896,27 +1823,12 @@ body.qo-modal-open { overflow: hidden; }
     }
 
     if (sizeOption) {
-      const sizes   = sortSizes(sizeOption.values);
-      const total   = qty;
-      const base    = Math.floor(total / sizes.length);
-      const rem     = total % sizes.length;
-      const distrib = sizes.map((_, i) => base + (i < rem ? 1 : 0));
-
       actHtml += `
-        <div class="qo-modal__option-group" id="qo-size-qty-group">
-          <p class="qo-modal__option-label">Quantité par taille</p>
-          <div class="qo-modal__size-qty-rows">
-            ${sizes.map((val, i) => `
-              <div class="qo-size-qty-row">
-                <span class="qo-size-qty-label">${val}</span>
-                <div class="qo-size-qty-wrap">
-                  <button class="qo-size-qty-btn" data-size="${val}" data-action="dec" type="button">−</button>
-                  <input class="qo-size-qty-input" data-size="${val}" type="number" value="${distrib[i]}" min="0" step="1">
-                  <button class="qo-size-qty-btn" data-size="${val}" data-action="inc" type="button">+</button>
-                </div>
-              </div>`).join('')}
+        <div class="qo-modal__option-group">
+          <p class="qo-modal__option-label">${sizeOption.name}</p>
+          <div class="qo-modal__sizes">
+            ${sortSizes(sizeOption.values).map(val => `<button class="qo-modal__size-btn" data-option="${sizeOption.name}" data-value="${val}" type="button">${val}</button>`).join('')}
           </div>
-          <p class="qo-modal__size-total">Total : <strong id="qo-qty-total">${total}</strong> pièces</p>
         </div>`;
     }
 
@@ -1930,26 +1842,22 @@ body.qo-modal-open { overflow: hidden; }
         </div>`;
     });
 
-    if (!sizeOption) {
-      actHtml += `
-        <div class="qo-modal__qty-group">
-          <p class="qo-modal__option-label">Quantité</p>
-          <div class="qo-modal__qty-wrap">
-            <button class="qo-modal__qty-btn" id="qo-qty-dec" type="button">−</button>
-            <input class="qo-modal__qty-input" id="qo-qty-input" type="number" value="${Math.max(qty, 1)}" min="1" step="1">
-            <button class="qo-modal__qty-btn" id="qo-qty-inc" type="button">+</button>
-          </div>
-        </div>`;
-    }
-
     actHtml += `
+      <div class="qo-modal__qty-group">
+        <p class="qo-modal__option-label">Quantité <span class="qo-modal__qty-min">(min. ${MIN_QTY} pièces)</span></p>
+        <div class="qo-modal__qty-wrap">
+          <button class="qo-modal__qty-btn" id="qo-qty-dec" type="button">−</button>
+          <input class="qo-modal__qty-input" id="qo-qty-input" type="number" value="${Math.max(qty, MIN_QTY)}" min="${MIN_QTY}" step="1">
+          <button class="qo-modal__qty-btn" id="qo-qty-inc" type="button">+</button>
+        </div>
+      </div>
       <button class="qo-modal__atc" id="qo-atc" type="button">Ajouter au panier</button>
       <p class="qo-modal__feedback" id="qo-feedback"></p>
     `;
 
     modalActions.innerHTML = actHtml;
 
-    /* Color swatch events */
+    /* Option events */
     modalActions.querySelectorAll('[data-option]').forEach(btn => {
       btn.addEventListener('click', () => {
         const optName = btn.dataset.option;
@@ -1969,56 +1877,26 @@ body.qo-modal-open { overflow: hidden; }
       });
     });
 
-    /* Per-size qty events */
-    if (sizeOption) {
-      function recalcTotal() {
-        const total = Array.from(document.querySelectorAll('.qo-size-qty-input'))
-          .reduce((s, el) => s + (parseInt(el.value) || 0), 0);
-        const totalEl = document.getElementById('qo-qty-total');
-        if (totalEl) totalEl.textContent = total;
-      }
-
-      modalActions.querySelectorAll('.qo-size-qty-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const sizeVal = btn.dataset.size;
-          const input   = modalActions.querySelector(`.qo-size-qty-input[data-size="${sizeVal}"]`);
-          if (!input) return;
-          const cur = parseInt(input.value) || 0;
-          if (btn.dataset.action === 'inc') input.value = cur + 1;
-          else input.value = Math.max(0, cur - 1);
-          recalcTotal();
-        });
-      });
-
-      modalActions.querySelectorAll('.qo-size-qty-input').forEach(el => {
-        el.addEventListener('change', () => {
-          if (parseInt(el.value) < 0) el.value = 0;
-          recalcTotal();
-        });
-      });
-    } else {
-      /* Single qty */
-      const qtyInput = document.getElementById('qo-qty-input');
-      document.getElementById('qo-qty-dec').addEventListener('click', () => {
-        qtyInput.value = Math.max(1, parseInt(qtyInput.value) - 1);
-      });
-      document.getElementById('qo-qty-inc').addEventListener('click', () => {
-        qtyInput.value = parseInt(qtyInput.value) + 1;
-      });
-      qtyInput.addEventListener('change', () => {
-        if (parseInt(qtyInput.value) < 1) qtyInput.value = 1;
-      });
-    }
+    /* Quantity */
+    const qtyInput = document.getElementById('qo-qty-input');
+    document.getElementById('qo-qty-dec').addEventListener('click', () => {
+      qtyInput.value = Math.max(MIN_QTY, parseInt(qtyInput.value) - 1);
+    });
+    document.getElementById('qo-qty-inc').addEventListener('click', () => {
+      qtyInput.value = parseInt(qtyInput.value) + 1;
+    });
+    qtyInput.addEventListener('change', () => {
+      if (parseInt(qtyInput.value) < MIN_QTY) qtyInput.value = MIN_QTY;
+    });
 
     document.getElementById('qo-atc').addEventListener('click', addToCart);
   }
 
-  function findVariant(extraSel) {
+  function findVariant() {
     if (!currentProduct) return null;
-    const merged = Object.assign({}, selectedOptions, extraSel || {});
     return currentProduct.variants.find(v =>
       currentProduct.options.every((opt, i) => {
-        const sel = merged[opt.name];
+        const sel = selectedOptions[opt.name];
         if (!sel) return true;
         return (v[`option${i + 1}`] || '').toLowerCase() === sel.toLowerCase();
       })
@@ -2026,62 +1904,43 @@ body.qo-modal-open { overflow: hidden; }
   }
 
   function updateVariantState() {
-    const atcBtn = document.getElementById('qo-atc');
+    const variant    = findVariant();
+    const atcBtn     = document.getElementById('qo-atc');
     if (!atcBtn) return;
-    atcBtn.disabled = false;
-    atcBtn.textContent = 'Ajouter au panier';
+    const allSelected = currentProduct.options.every(opt => selectedOptions[opt.name]);
+
+    if (!allSelected || !variant) {
+      atcBtn.disabled = false;
+      atcBtn.textContent = 'Ajouter au panier';
+    } else if (!variant.available) {
+      atcBtn.disabled = true;
+      atcBtn.textContent = 'Rupture de stock';
+    } else {
+      atcBtn.disabled = false;
+      atcBtn.textContent = 'Ajouter au panier';
+    }
   }
 
   async function addToCart() {
-    const sizeOption = currentProduct.options.find(o => ['taille','size'].includes(o.name.toLowerCase()));
-    const atcBtn     = document.getElementById('qo-atc');
-    atcBtn.disabled  = true;
+    const allSelected = currentProduct.options.every(opt => selectedOptions[opt.name]);
+    if (!allSelected) { showFeedback('Veuillez sélectionner toutes les options.', 'error'); return; }
+
+    const variant = findVariant();
+    if (!variant) { showFeedback("Cette combinaison n'est pas disponible.", 'error'); return; }
+
+    const qty = parseInt(document.getElementById('qo-qty-input').value);
+    if (qty < MIN_QTY) { showFeedback(`Minimum ${MIN_QTY} pièces requis.`, 'error'); return; }
+
+    const atcBtn = document.getElementById('qo-atc');
+    atcBtn.disabled = true;
     atcBtn.textContent = 'Ajout en cours…';
     document.getElementById('qo-feedback').textContent = '';
 
     try {
-      let items = [];
-
-      if (sizeOption) {
-        /* Mode par taille */
-        document.querySelectorAll('.qo-size-qty-input').forEach(el => {
-          const sizeVal = el.dataset.size;
-          const qty     = parseInt(el.value) || 0;
-          if (qty <= 0) return;
-          const variant = findVariant({ [sizeOption.name]: sizeVal });
-          if (variant) items.push({ id: variant.id, quantity: qty });
-        });
-        if (items.length === 0) {
-          showFeedback('Entrez au moins une quantité.', 'error');
-          atcBtn.disabled  = false;
-          atcBtn.textContent = 'Ajouter au panier';
-          return;
-        }
-      } else {
-        /* Mode qty unique */
-        const nonSizeOpts = currentProduct.options.filter(o => !['taille','size'].includes(o.name.toLowerCase()));
-        const allSelected = nonSizeOpts.every(opt => selectedOptions[opt.name]);
-        if (!allSelected) {
-          showFeedback('Veuillez sélectionner toutes les options.', 'error');
-          atcBtn.disabled  = false;
-          atcBtn.textContent = 'Ajouter au panier';
-          return;
-        }
-        const variant = findVariant();
-        if (!variant) {
-          showFeedback("Cette combinaison n'est pas disponible.", 'error');
-          atcBtn.disabled  = false;
-          atcBtn.textContent = 'Ajouter au panier';
-          return;
-        }
-        const qty = parseInt(document.getElementById('qo-qty-input').value) || 1;
-        items = [{ id: variant.id, quantity: qty }];
-      }
-
       const res = await fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items })
+        body: JSON.stringify({ items: [{ id: variant.id, quantity: qty }] })
       });
       if (!res.ok) { const e = await res.json(); throw new Error(e.description || 'Erreur'); }
 
@@ -2097,7 +1956,7 @@ body.qo-modal-open { overflow: hidden; }
       setTimeout(closeModal, 1400);
     } catch (e) {
       showFeedback(e.message || 'Une erreur est survenue.', 'error');
-      atcBtn.disabled  = false;
+      atcBtn.disabled = false;
       atcBtn.textContent = 'Ajouter au panier';
     }
   }

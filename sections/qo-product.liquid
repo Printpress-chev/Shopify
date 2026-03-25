@@ -1453,7 +1453,7 @@
   /* Target qty from URL */
   const urlParams = new URLSearchParams(window.location.search);
   const targetQty = parseInt(urlParams.get('quantity')) || 0;
-  if (targetQty >= MIN_QTY) {
+  if (targetQty >= 1) {
     const el = document.getElementById('qo-target');
     if (el) { el.style.display = 'flex'; document.getElementById('qo-target-qty').textContent = targetQty; }
   }
