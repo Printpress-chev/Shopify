@@ -157,24 +157,9 @@
         data-handle="{{ product.handle }}"
       >
         {%- comment -%}
-          Trouver l'image lifestyle = première image NON liée à une variante (Image Src du CSV)
-          Les images de variantes (Variant Image) sont liées à des variantes spécifiques.
+          Image lifestyle = Image Src position 1 du CSV = product.featured_image (index 0 Shopify)
         {%- endcomment -%}
-        {%- assign lifestyle_img = nil -%}
-        {%- for img in product.images -%}
-          {%- assign is_variant_img = false -%}
-          {%- for variant in product.variants -%}
-            {%- if variant.image and variant.image.id == img.id -%}
-              {%- assign is_variant_img = true -%}
-              {%- break -%}
-            {%- endif -%}
-          {%- endfor -%}
-          {%- unless is_variant_img -%}
-            {%- assign lifestyle_img = img -%}
-            {%- break -%}
-          {%- endunless -%}
-        {%- endfor -%}
-        {%- if lifestyle_img == nil -%}{%- assign lifestyle_img = product.featured_image -%}{%- endif -%}
+        {%- assign lifestyle_img = product.featured_image -%}
 
         <div class="qo-cat__card-img">
           {%- if lifestyle_img -%}
