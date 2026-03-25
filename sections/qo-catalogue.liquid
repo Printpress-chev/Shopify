@@ -1327,37 +1327,62 @@ body.qo-modal-open { overflow: hidden; }
     return s.replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  // Build color swatches panel
-  let activeColor = '';
+  // Color families — regroupe les teintes proches en une seule pastille
+  const COLOR_FAMILIES = [
+    { key: 'blanc',        label: 'Blanc',         hex: '#f2f2f2', border: '#ccc', keywords: ['blanc','white','écru','ecru','ivoire','ivory','crème','cream','sable','sand','naturel','natural','off-white'] },
+    { key: 'beige',        label: 'Beige',          hex: '#d4b896', keywords: ['beige','taupe','camel','tan','stone','pierre'] },
+    { key: 'gris',         label: 'Gris',           hex: '#9ca3af', keywords: ['gris','grey','gray','anthracite','chiné','heather','silver','argent','mélange'] },
+    { key: 'noir',         label: 'Noir',           hex: '#111',    keywords: ['noir','black','onyx','charbon','charcoal'] },
+    { key: 'bleu',         label: 'Bleu',           hex: '#3b82f6', keywords: ['bleu','blue','marine','navy','indigo','cobalt','ciel','sky','turquoise','aqua','canard','denim','saphir','sapphire','azure'] },
+    { key: 'vert',         label: 'Vert',           hex: '#16a34a', keywords: ['vert','green','kaki','khaki','olive','sauge','sage','forêt','forest','menthe','mint','émeraude','emerald','militaire'] },
+    { key: 'rouge',        label: 'Rouge',          hex: '#e53e3e', keywords: ['rouge','red','bordeaux','burgundy','corail','coral','tomate','tomato','framboise','cramoisi','crimson','rubis','ruby'] },
+    { key: 'rose',         label: 'Rose',           hex: '#f9a8d4', border: '#e0b0c0', keywords: ['rose','pink','pêche','peach','saumon','salmon','blush','fuchsia','magenta'] },
+    { key: 'violet',       label: 'Violet',         hex: '#7c3aed', keywords: ['violet','purple','lavande','lavender','mauve','lilas','lilac','prune','plum','aubergine'] },
+    { key: 'jaune_orange', label: 'Jaune / Orange', hex: '#f97316', keywords: ['jaune','yellow','orange','doré','gold','caramel','moutarde','mustard','miel','honey','safran','saffron','citron'] },
+    { key: 'marron',       label: 'Marron',         hex: '#92400e', keywords: ['marron','brown','brun','chocolat','chocolate','café','coffee','noisette','cognac','rouille','rust','terracotta'] },
+  ];
+
+  function getFamilyForColor(colorVal) {
+    const lower = colorVal.toLowerCase().trim();
+    for (const fam of COLOR_FAMILIES) {
+      if (fam.keywords.some(kw => lower.includes(kw))) return fam.key;
+    }
+    return null;
+  }
+
+  // Build color swatches panel (one swatch per family present in catalog)
+  let activeColor = ''; // stores a family key
   const colorPanelEl   = document.getElementById('qo-panel-color');
   const colorSwatchesEl = document.getElementById('qo-color-swatches');
   const colorTitleEl   = colorPanelEl ? colorPanelEl.querySelector('.qo-panel-filter__title') : null;
   const colorTriggerEl = colorPanelEl ? colorPanelEl.querySelector('.qo-panel-filter__trigger') : null;
 
-  if (colorSet.size > 0 && colorPanelEl) {
-    [...colorSet].sort().forEach(colorVal => {
-      const bg = getColor(colorVal);
-      const isLight = ['blanc','white','écru','ecru','beige','sable','sand','ivoire','ivory'].some(w => colorVal.includes(w));
+  // Which families actually exist in the catalog?
+  const presentFamilies = new Set();
+  colorSet.forEach(c => { const f = getFamilyForColor(c); if (f) presentFamilies.add(f); });
+
+  if (presentFamilies.size > 0 && colorPanelEl) {
+    COLOR_FAMILIES.filter(f => presentFamilies.has(f.key)).forEach(fam => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'qo-color-swatch';
-      btn.dataset.color = colorVal;
-      btn.title = titleCase(colorVal);
-      btn.style.background = bg;
-      if (isLight) btn.style.borderColor = '#bbb';
+      btn.dataset.color = fam.key;
+      btn.title = fam.label;
+      btn.style.background = fam.hex;
+      if (fam.border) btn.style.borderColor = fam.border;
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (activeColor === colorVal) {
+        if (activeColor === fam.key) {
           activeColor = '';
           btn.classList.remove('is-active');
           colorPanelEl.classList.remove('is-active');
           if (colorTitleEl) colorTitleEl.textContent = 'Couleur';
         } else {
-          activeColor = colorVal;
+          activeColor = fam.key;
           colorSwatchesEl.querySelectorAll('.qo-color-swatch').forEach(b => b.classList.remove('is-active'));
           btn.classList.add('is-active');
           colorPanelEl.classList.add('is-active');
-          if (colorTitleEl) colorTitleEl.textContent = titleCase(colorVal);
+          if (colorTitleEl) colorTitleEl.textContent = fam.label;
         }
         closeAllPanels(colorPanelEl);
         applyFilters();
@@ -1452,6 +1477,11 @@ body.qo-modal-open { overflow: hidden; }
       for (const [filter, value] of Object.entries(active)) {
         if (filter === 'type') {
           if (card.dataset.type !== value) { show = false; break; }
+        } else if (filter === 'colors') {
+          // Match by family: at least one product color must belong to the selected family
+          const productColors = (card.dataset.colors || '').split('|||').map(c => c.trim().toLowerCase()).filter(Boolean);
+          const match = productColors.some(c => getFamilyForColor(c) === value);
+          if (!match) { show = false; break; }
         } else if (filter === 'vendor') {
           if ((card.dataset.vendor || '').toLowerCase() !== value.toLowerCase()) { show = false; break; }
         } else {
