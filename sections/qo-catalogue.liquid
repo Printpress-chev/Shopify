@@ -321,7 +321,7 @@
 .qo-step__label--dark  { color: #444; }
 .qo-step__label strong { color: inherit; font-weight: 900; }
 
-/* Tooltip */
+/* Tooltip — bulle bande dessinée */
 .qo-tip {
   position: relative;
   display: inline-flex;
@@ -330,40 +330,49 @@
   flex-shrink: 0;
 }
 
-.qo-tip::before,
+/* Bulle */
 .qo-tip::after {
+  content: attr(data-tip);
   position: absolute;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 16px);
   left: 50%;
   transform: translateX(-50%);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
   z-index: 200;
-}
-
-.qo-tip::after {
-  content: attr(data-tip);
-  background: #1a1a1a;
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0;
-  line-height: 1.4;
-  padding: 8px 12px;
-  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  padding: 10px 16px;
+  border-radius: 16px;
+  border: 3px solid #111;
   width: max-content;
-  max-width: 240px;
+  max-width: 220px;
   white-space: normal;
   text-align: center;
 }
 
+/* Queue pointue */
 .qo-tip::before {
   content: '';
+  position: absolute;
   bottom: calc(100% + 4px);
-  border: 6px solid transparent;
-  border-top-color: #1a1a1a;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-right: 3px solid #111;
+  border-bottom: 3px solid #111;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 201;
 }
 
 .qo-tip:hover::before,
