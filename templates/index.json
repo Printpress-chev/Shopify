@@ -71,7 +71,9 @@
         "suffix": "vêtements",
         "btn_label": "Commande en ligne",
         "quote_link": "shopify://pages/catalogue",
-        "note": "Minimum 12 pièces par commande • Réponse sous 24h"
+        "note": "Minimum 12 pièces par commande • Réponse sous 24h",
+        "bg_image": "shopify://shop_images/charte_graphique_complete-3.png",
+        "overlay_opacity": 60
       }
     },
     "qo_brands": {
