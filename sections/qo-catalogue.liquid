@@ -299,15 +299,19 @@
       </button>
       <div class="qo-modal__body" id="qo-modal-body"></div>
       <div class="qo-modal__size-guide" id="qo-modal-size-guide">
-        <p class="qo-modal__size-guide-title">Size Guide</p>
-        <p class="qo-modal__size-guide-sub">Measure under your arms, around your chest</p>
+        <div class="qo-modal__sg-header">
+          <p class="qo-modal__size-guide-title">Guide des tailles</p>
+          <button class="qo-modal__unit-toggle" id="qo-modal-unit-toggle" type="button">EN CM</button>
+        </div>
+        <p class="qo-modal__size-guide-sub">Mesurez sous vos bras, autour de la poitrine</p>
         <table class="qo-modal__size-table">
-          <tr><td>XS</td><td>S</td><td>M</td><td>L</td><td>XL</td><td>2XL</td><td>3XL</td><td>4XL</td><td>5XL</td></tr>
-          <tr><td>34</td><td>36</td><td>40</td><td>44</td><td>48</td><td>52</td><td>56</td><td>60</td><td>62</td></tr>
+          <thead><tr><td>XS</td><td>S</td><td>M</td><td>L</td><td>XL</td><td>2XL</td><td>3XL</td><td>4XL</td><td>5XL</td></tr></thead>
+          <tbody>
+            <tr id="qo-sg-cm"><td>34</td><td>36</td><td>40</td><td>44</td><td>48</td><td>52</td><td>56</td><td>60</td><td>62</td></tr>
+            <tr id="qo-sg-po" style="display:none"><td>13½</td><td>14¼</td><td>15¾</td><td>17¼</td><td>19</td><td>20½</td><td>22</td><td>23½</td><td>24½</td></tr>
+          </tbody>
         </table>
-        <p class="qo-modal__size-guide-unit">In CM</p>
       </div>
-      <div class="qo-modal__actions" id="qo-modal-actions"></div>
     </div>
   </div>
 </div>
@@ -1006,7 +1010,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 80px 20px 20px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -1019,8 +1023,9 @@
   border-radius: 16px;
   overflow: hidden;
   width: 100%;
-  max-width: 1040px;
-  max-height: 90vh;
+  max-width: 820px;
+  max-height: calc(100vh - 100px);
+  height: 520px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   box-shadow: 0 24px 80px rgba(0,0,0,0.28);
@@ -1094,7 +1099,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  max-height: calc(100vh - 100px);
 }
 
 .qo-modal__body { padding: 28px 28px 0; }
@@ -1120,128 +1125,59 @@
 
 /* Guide de taille */
 .qo-modal__size-guide {
-  background: #111;
-  color: #fff;
-  padding: 20px 28px;
-  margin-top: 20px;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 16px 28px 20px;
+  margin-top: auto;
+}
+
+.qo-modal__sg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
 }
 
 .qo-modal__size-guide-title {
-  font-size: 1.1rem; font-weight: 900; text-transform: uppercase;
-  letter-spacing: 0.1em; text-align: center; margin: 0 0 6px;
+  font-size: 0.78rem; font-weight: 900; text-transform: uppercase;
+  letter-spacing: 0.1em; color: #111; margin: 0;
 }
 
+.qo-modal__unit-toggle {
+  font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; color: #fff;
+  background: #111; border: none; border-radius: 5px;
+  padding: 4px 10px; cursor: pointer;
+  transition: background 0.15s;
+}
+.qo-modal__unit-toggle:hover { background: #C9A96E; }
+
 .qo-modal__size-guide-sub {
-  font-size: 0.78rem; font-weight: 400; text-align: center;
-  color: rgba(255,255,255,0.7); margin: 0 0 16px;
+  font-size: 0.72rem; font-weight: 400; color: #888;
+  margin: 0 0 10px;
 }
 
 .qo-modal__size-table {
-  width: 100%; border-collapse: collapse; margin-bottom: 10px;
+  width: 100%; border-collapse: collapse;
 }
 
 .qo-modal__size-table td {
-  border: 1.5px solid rgba(255,255,255,0.25);
+  border: 1px solid #e0e0e0;
   text-align: center;
-  padding: 8px 4px;
-  font-size: 0.8rem;
+  padding: 6px 2px;
+  font-size: 0.75rem;
   font-weight: 700;
+  color: #111;
 }
 
-.qo-modal__size-table tr:first-child td { color: rgba(255,255,255,0.6); }
-.qo-modal__size-table tr:last-child td { color: #fff; }
-
-.qo-modal__size-guide-unit {
-  font-size: 0.75rem; font-weight: 700; text-align: center;
-  color: rgba(255,255,255,0.5); letter-spacing: 0.1em; text-transform: uppercase;
+.qo-modal__size-table thead td {
+  background: #f5f5f5;
+  color: #555;
+  font-weight: 800;
+  font-size: 0.7rem;
+  text-transform: uppercase;
 }
 
-/* Options + ATC */
-.qo-modal__actions { padding: 20px 28px 28px; }
-
-.qo-modal__price {
-  font-size: 1rem; font-weight: 800; color: #111; margin: 0 0 16px;
-}
-.qo-modal__price span { font-size: 0.75rem; font-weight: 500; color: #888; }
-
-.qo-modal__divider { border: none; border-top: 1px solid #eee; margin: 16px 0; }
-.qo-modal__option-group { margin-bottom: 16px; }
-
-.qo-modal__option-label {
-  font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.06em; color: #555; margin: 0 0 8px;
-  display: flex; align-items: center; gap: 8px;
-}
-
-.qo-modal__option-selected {
-  font-size: 0.75rem; color: #555; font-style: italic;
-  font-weight: 400; text-transform: none; letter-spacing: 0;
-}
-
-.qo-modal__swatches { display: flex; flex-wrap: wrap; gap: 8px; }
-
-.qo-modal__swatch-btn {
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 2px solid #e0e0e0; cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
-  overflow: hidden; padding: 0; background: #eee;
-  flex-shrink: 0;
-}
-.qo-modal__swatch-btn img {
-  width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%;
-}
-.qo-modal__swatch-btn:hover { transform: scale(1.15); border-color: #aaa; }
-.qo-modal__swatch-btn.is-active { border-color: #C9A96E; box-shadow: 0 0 0 2px #C9A96E; }
-
-.qo-modal__sizes { display: flex; flex-wrap: wrap; gap: 6px; }
-
-.qo-modal__size-btn {
-  padding: 6px 11px; border: 1.5px solid #ddd; border-radius: 7px;
-  background: #fff; font-size: 0.8rem; font-weight: 700; color: #333;
-  cursor: pointer; transition: all 0.15s;
-}
-.qo-modal__size-btn:hover { border-color: #111; }
-.qo-modal__size-btn.is-active { background: #111; border-color: #111; color: #fff; }
-.qo-modal__size-btn.is-unavailable { opacity: 0.35; text-decoration: line-through; cursor: not-allowed; }
-
-.qo-modal__qty-group { margin-bottom: 16px; }
-.qo-modal__qty-min { font-weight: 500; color: #C9A96E; text-transform: none; letter-spacing: 0; font-size: 0.73rem; }
-
-.qo-modal__qty-wrap {
-  display: flex; align-items: center;
-  border: 1.5px solid #ddd; border-radius: 10px;
-  overflow: hidden; width: fit-content;
-}
-
-.qo-modal__qty-btn {
-  background: #f5f5f5; border: none; width: 40px; height: 40px;
-  font-size: 1.1rem; font-weight: 700; color: #333;
-  cursor: pointer; transition: background 0.15s;
-  display: flex; align-items: center; justify-content: center;
-}
-.qo-modal__qty-btn:hover { background: #e8e8e8; }
-
-.qo-modal__qty-input {
-  width: 56px; border: none;
-  border-left: 1.5px solid #ddd; border-right: 1.5px solid #ddd;
-  text-align: center; font-size: 0.95rem; font-weight: 700; color: #111;
-  height: 40px; outline: none; -moz-appearance: textfield;
-}
-.qo-modal__qty-input::-webkit-outer-spin-button,
-.qo-modal__qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-
-.qo-modal__atc {
-  width: 100%; padding: 14px;
-  background: #C9A96E; color: #fff; border: none; border-radius: 10px;
-  font-size: 0.88rem; font-weight: 800; text-transform: uppercase;
-  letter-spacing: 0.08em; cursor: pointer; transition: background 0.2s, transform 0.15s;
-}
-.qo-modal__atc:hover:not(:disabled) { background: #b8902a; transform: translateY(-1px); }
-.qo-modal__atc:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-
-.qo-modal__feedback { margin: 10px 0 0; font-size: 0.8rem; font-weight: 600; text-align: center; }
-.qo-modal__feedback--success { color: #16a34a; }
-.qo-modal__feedback--error   { color: #dc2626; }
 
 body.qo-modal-open { overflow: hidden; }
 
@@ -1717,23 +1653,20 @@ body.qo-modal-open { overflow: hidden; }
   /* ── Modal ──────────────────────────────────────── */
   const modal      = document.getElementById('qo-modal');
   const backdrop   = document.getElementById('qo-backdrop');
-  const closeBtn   = document.getElementById('qo-modal-close');
-  const modalBody  = document.getElementById('qo-modal-body');
-  const modalActions = document.getElementById('qo-modal-actions');
-  const modalImg   = document.getElementById('qo-modal-img');
-  const imgPrev    = document.getElementById('qo-img-prev');
-  const imgNext    = document.getElementById('qo-img-next');
-  const colorBar   = document.getElementById('qo-modal-color-bar');
-  let   imgIndex   = 0;
+  const closeBtn = document.getElementById('qo-modal-close');
+  const modalBody = document.getElementById('qo-modal-body');
+  const modalImg  = document.getElementById('qo-modal-img');
+  const imgPrev   = document.getElementById('qo-img-prev');
+  const imgNext   = document.getElementById('qo-img-next');
+  const colorBar  = document.getElementById('qo-modal-color-bar');
+  let   imgIndex  = 0;
 
-  let currentProduct  = null;
-  let selectedOptions = {};
+  let currentProduct = null;
 
   function openModal(productId) {
     const card   = grid.querySelector(`[data-product="${productId}"]`);
     const dataEl = card.querySelector('.qo-product-data');
-    currentProduct  = JSON.parse(dataEl.textContent);
-    selectedOptions = {};
+    currentProduct = JSON.parse(dataEl.textContent);
     renderModal();
     modal.classList.add('is-open');
     backdrop.classList.add('is-open');
@@ -1763,16 +1696,7 @@ body.qo-modal-open { overflow: hidden; }
   imgNext.addEventListener('click', () => showImg(imgIndex + 1));
 
   function renderModal() {
-    const p   = currentProduct;
-    const qty = parseInt(heroQty.value) || MIN_QTY;
-
-    const colorOption  = p.options.find(o => ['couleur','color','colour'].includes(o.name.toLowerCase()));
-    const sizeOption   = p.options.find(o => ['taille','size'].includes(o.name.toLowerCase()));
-    const otherOptions = p.options.filter(o => o !== colorOption && o !== sizeOption);
-
-    const priceHtml = p.price_min !== p.price_max
-      ? `À partir de ${formatMoney(p.price_min)}`
-      : formatMoney(p.price_min);
+    const p = currentProduct;
 
     // Image
     imgIndex = 0;
@@ -1781,191 +1705,33 @@ body.qo-modal-open { overflow: hidden; }
 
     // Barre couleurs
     if (p.color_count > 0) {
-      colorBar.textContent = `Available in ${p.color_count} colour${p.color_count > 1 ? 's' : ''}`;
+      colorBar.textContent = `Disponible en ${p.color_count} couleur${p.color_count > 1 ? 's' : ''}`;
       colorBar.style.display = '';
     } else {
       colorBar.style.display = 'none';
     }
 
     // Corps : type + titre + description
-    let bodyHtml = `
+    modalBody.innerHTML = `
       ${p.type ? `<p class="qo-modal__type">${p.type}</p>` : ''}
       <h2 class="qo-modal__title">${p.title}</h2>
       ${p.description ? `<div class="qo-modal__desc">${p.description}</div>` : ''}
     `;
-    modalBody.innerHTML = bodyHtml;
-
-    // Actions : options + qty + ATC
-    let actHtml = `<p class="qo-modal__price" id="qo-modal-price">${priceHtml} <span>/ pièce</span></p><hr class="qo-modal__divider">`;
-
-    if (colorOption) {
-      // Construire map couleur → URL swatch depuis les variantes
-      const swatchMap = {};
-      p.variants.forEach(v => {
-        if (v.option1 && v.swatch && !swatchMap[v.option1]) {
-          swatchMap[v.option1] = v.swatch;
-        }
-      });
-
-      actHtml += `
-        <div class="qo-modal__option-group">
-          <p class="qo-modal__option-label">${colorOption.name} <span class="qo-modal__option-selected" id="qo-color-label"></span></p>
-          <div class="qo-modal__swatches" id="qo-opt-${colorOption.name}">
-            ${colorOption.values.map(val => {
-              const swatchUrl = swatchMap[val];
-              const inner = swatchUrl
-                ? `<img src="${swatchUrl}" alt="${val}" loading="lazy">`
-                : `<span style="display:block;width:100%;height:100%;background:${getColor(val)};border-radius:50%;"></span>`;
-              return `<button class="qo-modal__swatch-btn" data-option="${colorOption.name}" data-value="${val}" title="${val}" type="button">${inner}</button>`;
-            }).join('')}
-          </div>
-        </div>`;
-    }
-
-    if (sizeOption) {
-      actHtml += `
-        <div class="qo-modal__option-group">
-          <p class="qo-modal__option-label">${sizeOption.name}</p>
-          <div class="qo-modal__sizes">
-            ${sortSizes(sizeOption.values).map(val => `<button class="qo-modal__size-btn" data-option="${sizeOption.name}" data-value="${val}" type="button">${val}</button>`).join('')}
-          </div>
-        </div>`;
-    }
-
-    otherOptions.forEach(option => {
-      actHtml += `
-        <div class="qo-modal__option-group">
-          <p class="qo-modal__option-label">${option.name}</p>
-          <div class="qo-modal__sizes">
-            ${option.values.map(val => `<button class="qo-modal__size-btn" data-option="${option.name}" data-value="${val}" type="button">${val}</button>`).join('')}
-          </div>
-        </div>`;
-    });
-
-    actHtml += `
-      <div class="qo-modal__qty-group">
-        <p class="qo-modal__option-label">Quantité <span class="qo-modal__qty-min">(min. ${MIN_QTY} pièces)</span></p>
-        <div class="qo-modal__qty-wrap">
-          <button class="qo-modal__qty-btn" id="qo-qty-dec" type="button">−</button>
-          <input class="qo-modal__qty-input" id="qo-qty-input" type="number" value="${Math.max(qty, MIN_QTY)}" min="${MIN_QTY}" step="1">
-          <button class="qo-modal__qty-btn" id="qo-qty-inc" type="button">+</button>
-        </div>
-      </div>
-      <button class="qo-modal__atc" id="qo-atc" type="button">Ajouter au panier</button>
-      <p class="qo-modal__feedback" id="qo-feedback"></p>
-    `;
-
-    modalActions.innerHTML = actHtml;
-
-    /* Option events */
-    modalActions.querySelectorAll('[data-option]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const optName = btn.dataset.option;
-        const val     = btn.dataset.value;
-        selectedOptions[optName] = val;
-
-        const group = btn.closest('.qo-modal__swatches, .qo-modal__sizes');
-        group.querySelectorAll('[data-option]').forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-
-        if (['couleur','color','colour'].includes(optName.toLowerCase())) {
-          const lbl = document.getElementById('qo-color-label');
-          if (lbl) lbl.textContent = val;
-        }
-
-        updateVariantState();
-      });
-    });
-
-    /* Quantity */
-    const qtyInput = document.getElementById('qo-qty-input');
-    document.getElementById('qo-qty-dec').addEventListener('click', () => {
-      qtyInput.value = Math.max(MIN_QTY, parseInt(qtyInput.value) - 1);
-    });
-    document.getElementById('qo-qty-inc').addEventListener('click', () => {
-      qtyInput.value = parseInt(qtyInput.value) + 1;
-    });
-    qtyInput.addEventListener('change', () => {
-      if (parseInt(qtyInput.value) < MIN_QTY) qtyInput.value = MIN_QTY;
-    });
-
-    document.getElementById('qo-atc').addEventListener('click', addToCart);
   }
 
-  function findVariant() {
-    if (!currentProduct) return null;
-    return currentProduct.variants.find(v =>
-      currentProduct.options.every((opt, i) => {
-        const sel = selectedOptions[opt.name];
-        if (!sel) return true;
-        return (v[`option${i + 1}`] || '').toLowerCase() === sel.toLowerCase();
-      })
-    );
-  }
+  /* ── Toggle CM / PO ─────────────────────────────── */
+  const unitToggle = document.getElementById('qo-modal-unit-toggle');
+  const rowCm      = document.getElementById('qo-sg-cm');
+  const rowPo      = document.getElementById('qo-sg-po');
+  let   unitIsCm   = true;
 
-  function updateVariantState() {
-    const variant    = findVariant();
-    const atcBtn     = document.getElementById('qo-atc');
-    if (!atcBtn) return;
-    const allSelected = currentProduct.options.every(opt => selectedOptions[opt.name]);
-
-    if (!allSelected || !variant) {
-      atcBtn.disabled = false;
-      atcBtn.textContent = 'Ajouter au panier';
-    } else if (!variant.available) {
-      atcBtn.disabled = true;
-      atcBtn.textContent = 'Rupture de stock';
-    } else {
-      atcBtn.disabled = false;
-      atcBtn.textContent = 'Ajouter au panier';
-    }
-  }
-
-  async function addToCart() {
-    const allSelected = currentProduct.options.every(opt => selectedOptions[opt.name]);
-    if (!allSelected) { showFeedback('Veuillez sélectionner toutes les options.', 'error'); return; }
-
-    const variant = findVariant();
-    if (!variant) { showFeedback("Cette combinaison n'est pas disponible.", 'error'); return; }
-
-    const qty = parseInt(document.getElementById('qo-qty-input').value);
-    if (qty < MIN_QTY) { showFeedback(`Minimum ${MIN_QTY} pièces requis.`, 'error'); return; }
-
-    const atcBtn = document.getElementById('qo-atc');
-    atcBtn.disabled = true;
-    atcBtn.textContent = 'Ajout en cours…';
-    document.getElementById('qo-feedback').textContent = '';
-
-    try {
-      const res = await fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: [{ id: variant.id, quantity: qty }] })
-      });
-      if (!res.ok) { const e = await res.json(); throw new Error(e.description || 'Erreur'); }
-
-      atcBtn.textContent = '✓ Ajouté !';
-      showFeedback('Produit ajouté au panier avec succès !', 'success');
-
-      fetch('/cart.js').then(r => r.json()).then(data => {
-        document.querySelectorAll('[data-cart-count], .qo-cart-count').forEach(el => {
-          el.textContent = data.item_count;
-        });
-      }).catch(() => {});
-
-      setTimeout(closeModal, 1400);
-    } catch (e) {
-      showFeedback(e.message || 'Une erreur est survenue.', 'error');
-      atcBtn.disabled = false;
-      atcBtn.textContent = 'Ajouter au panier';
-    }
-  }
-
-  function showFeedback(msg, type) {
-    const el = document.getElementById('qo-feedback');
-    if (!el) return;
-    el.textContent = msg;
-    el.className = `qo-modal__feedback qo-modal__feedback--${type}`;
+  if (unitToggle) {
+    unitToggle.addEventListener('click', () => {
+      unitIsCm = !unitIsCm;
+      rowCm.style.display = unitIsCm ? '' : 'none';
+      rowPo.style.display = unitIsCm ? 'none' : '';
+      unitToggle.textContent = unitIsCm ? 'EN CM' : 'EN PO';
+    });
   }
 
   /* ── Event listeners ────────────────────────────── */
