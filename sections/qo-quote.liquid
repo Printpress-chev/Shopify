@@ -6,8 +6,8 @@
         class="qo-quote__input"
         type="number"
         id="qo-qty"
-        value="50"
-        min="12"
+        placeholder="50"
+        min="1"
         max="9999"
         aria-label="Nombre de pièces"
       >
@@ -27,8 +27,8 @@
     if (!btn || !input) return;
     var base = btn.href;
     function updateLink() {
-      var qty = parseInt(input.value) || 12;
-      if (qty < 12) { input.value = 12; qty = 12; }
+      var qty = parseInt(input.value) || 1;
+      if (qty < 1) { input.value = 1; qty = 1; }
       btn.href = base.split('?')[0] + '?quantity=' + qty;
     }
     input.addEventListener('input', updateLink);
@@ -116,7 +116,7 @@
   "settings": [
     { "type": "text", "id": "prefix", "label": "Texte avant le nombre", "default": "J'ai besoin de" },
     { "type": "text", "id": "suffix", "label": "Texte après le nombre", "default": "vêtements" },
-    { "type": "text", "id": "btn_label", "label": "Bouton — Texte", "default": "Obtenir mon devis" },
+    { "type": "text", "id": "btn_label", "label": "Bouton — Texte", "default": "Commande en ligne" },
     { "type": "url", "id": "quote_link", "label": "Bouton — Lien" },
     { "type": "text", "id": "note", "label": "Note sous le bouton", "default": "Minimum 12 pièces par commande • Réponse sous 24h" }
   ],

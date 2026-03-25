@@ -69,7 +69,7 @@
       "settings": {
         "prefix": "J'ai besoin de",
         "suffix": "vêtements",
-        "btn_label": "Obtenir mon devis",
+        "btn_label": "Commande en ligne",
         "quote_link": "shopify://pages/catalogue",
         "note": "Minimum 12 pièces par commande • Réponse sous 24h"
       }
