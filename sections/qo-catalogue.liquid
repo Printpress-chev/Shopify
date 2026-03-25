@@ -244,7 +244,8 @@
                   "option1": {{ variant.option1 | json }},
                   "option2": {{ variant.option2 | json }},
                   "option3": {{ variant.option3 | json }},
-                  "price": {{ variant.price }}
+                  "price": {{ variant.price }},
+                  "swatch": {{ variant.metafields.shopify['color-pattern'] | json }}
                 }{% unless forloop.last %},{% endunless %}
               {%- endfor -%}
             ]
@@ -1168,9 +1169,14 @@
 .qo-modal__swatches { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .qo-modal__swatch-btn {
-  width: 28px; height: 28px; border-radius: 50%;
+  width: 32px; height: 32px; border-radius: 50%;
   border: 2px solid #e0e0e0; cursor: pointer;
   transition: border-color 0.15s, transform 0.15s;
+  overflow: hidden; padding: 0; background: #eee;
+  flex-shrink: 0;
+}
+.qo-modal__swatch-btn img {
+  width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%;
 }
 .qo-modal__swatch-btn:hover { transform: scale(1.15); border-color: #aaa; }
 .qo-modal__swatch-btn.is-active { border-color: #C9A96E; box-shadow: 0 0 0 2px #C9A96E; }
@@ -1767,14 +1773,24 @@ body.qo-modal-open { overflow: hidden; }
     let actHtml = `<p class="qo-modal__price" id="qo-modal-price">${priceHtml} <span>/ pièce</span></p><hr class="qo-modal__divider">`;
 
     if (colorOption) {
+      // Construire map couleur → URL swatch depuis les variantes
+      const swatchMap = {};
+      p.variants.forEach(v => {
+        if (v.option1 && v.swatch && !swatchMap[v.option1]) {
+          swatchMap[v.option1] = v.swatch;
+        }
+      });
+
       actHtml += `
         <div class="qo-modal__option-group">
           <p class="qo-modal__option-label">${colorOption.name} <span class="qo-modal__option-selected" id="qo-color-label"></span></p>
           <div class="qo-modal__swatches" id="qo-opt-${colorOption.name}">
             ${colorOption.values.map(val => {
-              const bg = getColor(val);
-              const isLight = ['blanc','white','écru','ecru','beige','sable','sand'].some(w => val.toLowerCase().includes(w));
-              return `<button class="qo-modal__swatch-btn" data-option="${colorOption.name}" data-value="${val}" style="background:${bg}${isLight ? ';border-color:#ccc' : ''}" title="${val}" type="button"></button>`;
+              const swatchUrl = swatchMap[val];
+              const inner = swatchUrl
+                ? `<img src="${swatchUrl}" alt="${val}" loading="lazy">`
+                : `<span style="display:block;width:100%;height:100%;background:${getColor(val)};border-radius:50%;"></span>`;
+              return `<button class="qo-modal__swatch-btn" data-option="${colorOption.name}" data-value="${val}" title="${val}" type="button">${inner}</button>`;
             }).join('')}
           </div>
         </div>`;
