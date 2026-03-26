@@ -50,6 +50,9 @@
     background: #111;
     padding: 80px 24px;
     text-align: center;
+
+    @media (max-width: 900px) { padding: 64px 20px; }
+    @media (max-width: 560px) { padding: 52px 16px; }
   }
 
   .qo-quote__overlay {
@@ -114,6 +117,13 @@
     padding: 18px 48px;
     border-radius: 4px;
     transition: background 0.2s ease;
+
+    @media (max-width: 560px) {
+      padding: 16px 32px;
+      font-size: 0.88rem;
+      width: 100%;
+      text-align: center;
+    }
   }
 
   .qo-quote__btn:hover {

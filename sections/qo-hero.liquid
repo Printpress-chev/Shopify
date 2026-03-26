@@ -56,9 +56,17 @@
     font-size: {{ section.settings.eyebrow_size }}px;
   }
 
-  @media (max-width: 749px) {
+  @media (max-width: 900px) {
     #qo-hero-{{ section.id }} .qo-hero__title {
-      font-size: {{ section.settings.title_size | times: 0.6 | round }}px;
+      font-size: {{ section.settings.title_size | times: 0.72 | round }}px;
+    }
+  }
+  @media (max-width: 600px) {
+    #qo-hero-{{ section.id }} .qo-hero__title {
+      font-size: {{ section.settings.title_size | times: 0.5 | round }}px;
+    }
+    #qo-hero-{{ section.id }} .qo-hero__eyebrow {
+      font-size: {{ section.settings.eyebrow_size | times: 0.85 | round }}px;
     }
   }
 {% endstyle %}
@@ -163,10 +171,28 @@
     border: 1px solid rgba(255,255,255,0.15);
   }
 
+  @media (max-width: 900px) {
+    .qo-hero {
+      min-height: 75svh;
+    }
+    .qo-hero__content {
+      padding: 40px 20px;
+    }
+  }
+
   @media (max-width: 600px) {
+    .qo-hero {
+      min-height: 65svh;
+    }
+    .qo-hero__content {
+      padding: 32px 16px;
+    }
+    .qo-hero__btns {
+      gap: 12px;
+    }
     .qo-hero__btn {
-      padding: 16px 28px;
-      font-size: 0.82rem;
+      padding: 14px 24px;
+      font-size: 0.8rem;
     }
   }
 {% endstylesheet %}
