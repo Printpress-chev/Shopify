@@ -18,7 +18,7 @@
         "eyebrow_size": 13,
         "title": "Impression qualité sur vêtements",
         "title_font": "sans_serif_n7",
-        "title_size": 80,
+        "title_size": 40,
         "btn1_label": "Commander en ligne",
         "btn1_link": "",
         "btn2_label": "Devis personnalisé",
@@ -35,12 +35,15 @@
       "type": "qo-why-us",
       "settings": {
         "heading": "Pourquoi choisir PrintPress ?",
+        "card1_image": "shopify://shop_images/freepik__talk__43714.png",
         "card1_video": "",
         "card1_title": "Qualité Primée",
         "card1_text": "Impressions durables et vibrantes qui résistent aux lavages. Nos clients reviennent toujours.",
+        "card2_image": "shopify://shop_images/thoughtful-people-doing-paperwork.jpg",
         "card2_video": "",
         "card2_title": "Service Personnalisé",
         "card2_text": "Un interlocuteur dédié pour chaque commande. Nous vous accompagnons de A à Z.",
+        "card3_image": "shopify://shop_images/close-up-hand-holding-device.jpg",
         "card3_video": "",
         "card3_title": "Commande Facile",
         "card3_text": "Obtenez un devis en quelques clics. Livraison rapide dès 12 pièces."
@@ -147,7 +150,7 @@
         "brand_narRpV"
       ],
       "settings": {
-        "label": "Ils nous font confiance"
+        "label": "Nos fournisseurs"
       }
     },
     "ss_back_to_top_Cc3PUN": {
