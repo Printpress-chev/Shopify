@@ -1,0 +1,284 @@
+<footer class="qo-footer">
+  <div class="qo-footer__top">
+    <div class="qo-footer__inner">
+
+      <!-- Logo + tagline -->
+      <div class="qo-footer__brand">
+        {%- if section.settings.logo != blank -%}
+          <a href="/" class="qo-footer__logo">
+            <img src="{{ section.settings.logo | image_url: width: 200 }}" alt="{{ shop.name }}" width="140" loading="lazy">
+          </a>
+        {%- else -%}
+          <a href="/" class="qo-footer__logo-text">{{ shop.name }}</a>
+        {%- endif -%}
+        {%- if section.settings.tagline != blank -%}
+          <p class="qo-footer__tagline">{{ section.settings.tagline }}</p>
+        {%- endif -%}
+        {%- if section.settings.email != blank -%}
+          <a href="mailto:{{ section.settings.email }}" class="qo-footer__contact-link">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="16" height="12" rx="2"/><path d="M2 7l8 5 8-5"/></svg>
+            {{ section.settings.email }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.phone != blank -%}
+          <a href="tel:{{ section.settings.phone | remove: ' ' }}" class="qo-footer__contact-link">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3.5A1.5 1.5 0 014.5 2h1.172a1 1 0 01.95.684l.867 2.6a1 1 0 01-.23 1.04L6.1 7.48C7.15 9.38 9.62 11.85 11.52 12.9l1.156-1.159a1 1 0 011.04-.23l2.6.867a1 1 0 01.684.95V14.5A1.5 1.5 0 0115.5 16C8.596 16 3 10.404 3 3.5z"/></svg>
+            {{ section.settings.phone }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      <!-- Col Navigation -->
+      <div class="qo-footer__col">
+        <p class="qo-footer__col-title">Navigation</p>
+        <ul class="qo-footer__links">
+          <li><a href="/">Accueil</a></li>
+          <li><a href="/pages/services">Services</a></li>
+          <li><a href="/pages/commande-rapide">Commande Rapide</a></li>
+          <li><a href="/pages/commande-personnalisee">Commande Personnalisée</a></li>
+          <li><a href="/collections/boutique">Boutique</a></li>
+        </ul>
+      </div>
+
+      <!-- Col Support -->
+      <div class="qo-footer__col">
+        <p class="qo-footer__col-title">Support</p>
+        <ul class="qo-footer__links">
+          <li><a href="/pages/contact">Contact</a></li>
+          <li><a href="/pages/faq">FAQ</a></li>
+          <li><a href="/pages/politiques">Termes &amp; Politiques</a></li>
+        </ul>
+      </div>
+
+      <!-- Col Réseaux sociaux -->
+      <div class="qo-footer__col">
+        <p class="qo-footer__col-title">Suivez-nous</p>
+        <div class="qo-footer__socials">
+          {%- if section.settings.instagram != blank -%}
+            <a href="{{ section.settings.instagram }}" class="qo-footer__social" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.facebook != blank -%}
+            <a href="{{ section.settings.facebook }}" class="qo-footer__social" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.tiktok != blank -%}
+            <a href="{{ section.settings.tiktok }}" class="qo-footer__social" target="_blank" rel="noopener" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12a4 4 0 104 4V4a5 5 0 005 5"/></svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.linkedin != blank -%}
+            <a href="{{ section.settings.linkedin }}" class="qo-footer__social" target="_blank" rel="noopener" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="4"/><path d="M7 10v7M7 7v.01M12 17v-4a2 2 0 014 0v4M12 10v7"/></svg>
+            </a>
+          {%- endif -%}
+        </div>
+        {%- if section.settings.instagram == blank and section.settings.facebook == blank and section.settings.tiktok == blank and section.settings.linkedin == blank -%}
+          <p class="qo-footer__social-placeholder">Ajoutez vos réseaux dans l'éditeur</p>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Barre basse -->
+  <div class="qo-footer__bottom">
+    <div class="qo-footer__bottom-inner">
+      <p class="qo-footer__copy">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. Tous droits réservés.</p>
+      <p class="qo-footer__made">Impression personnalisée · Vente en gros · Canada</p>
+    </div>
+  </div>
+
+</footer>
+
+{% stylesheet %}
+  .qo-footer {
+    background: #0d0d0d;
+    color: rgba(255,255,255,0.65);
+    font-size: 0.85rem;
+  }
+
+  .qo-footer__top {
+    padding: 64px 24px 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .qo-footer__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 1fr 1fr;
+    gap: 48px;
+  }
+
+  /* Brand */
+  .qo-footer__logo img { max-height: 38px; width: auto; display: block; margin-bottom: 16px; filter: brightness(0) invert(1); opacity: 0.9; }
+  .qo-footer__logo-text { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; color: #fff; text-decoration: none; display: block; margin-bottom: 16px; letter-spacing: -0.02em; }
+
+  .qo-footer__tagline {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+    margin: 0 0 20px;
+    max-width: 240px;
+  }
+
+  .qo-footer__contact-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+    transition: color 0.15s;
+  }
+  .qo-footer__contact-link:hover { color: #C9A96E; }
+  .qo-footer__contact-link svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* Colonnes */
+  .qo-footer__col-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #fff;
+    margin: 0 0 18px;
+  }
+
+  .qo-footer__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .qo-footer__links a {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.83rem;
+    transition: color 0.15s;
+  }
+  .qo-footer__links a:hover { color: #C9A96E; }
+
+  /* Réseaux */
+  .qo-footer__socials {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .qo-footer__social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .qo-footer__social:hover { border-color: #C9A96E; color: #C9A96E; background: rgba(201,169,110,0.08); }
+  .qo-footer__social svg { width: 17px; height: 17px; }
+
+  .qo-footer__social-placeholder { font-size: 0.75rem; color: rgba(255,255,255,0.25); font-style: italic; }
+
+  /* Barre basse */
+  .qo-footer__bottom {
+    padding: 18px 24px;
+  }
+
+  .qo-footer__bottom-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .qo-footer__copy, .qo-footer__made {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.28);
+    margin: 0;
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    .qo-footer__inner {
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+    .qo-footer__brand { grid-column: 1 / -1; }
+  }
+
+  @media (max-width: 560px) {
+    .qo-footer__inner { grid-template-columns: 1fr; }
+    .qo-footer__bottom-inner { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "QO — Footer",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Impression personnalisée sur vêtements. Qualité premium, livraison rapide."
+    },
+    {
+      "type": "header",
+      "content": "Contact"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Courriel"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Téléphone"
+    },
+    {
+      "type": "header",
+      "content": "Réseaux sociaux"
+    },
+    {
+      "type": "url",
+      "id": "instagram",
+      "label": "Instagram"
+    },
+    {
+      "type": "url",
+      "id": "facebook",
+      "label": "Facebook"
+    },
+    {
+      "type": "url",
+      "id": "tiktok",
+      "label": "TikTok"
+    },
+    {
+      "type": "url",
+      "id": "linkedin",
+      "label": "LinkedIn"
+    }
+  ],
+  "presets": [{ "name": "QO — Footer" }]
+}
+{% endschema %}
