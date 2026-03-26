@@ -12,9 +12,16 @@
       <a href="/pages/services" class="qo-header__link">
         {%- if request.locale.iso_code == 'fr' -%}Services{%- else -%}Services{%- endif -%}
       </a>
-      <a href="/pages/commande-rapide" class="qo-header__link">
-        {%- if request.locale.iso_code == 'fr' -%}Commande Rapide{%- else -%}Quick Order{%- endif -%}
-      </a>
+      <div class="qo-header__dropdown">
+        <button class="qo-header__link qo-header__dropdown-toggle">
+          {%- if request.locale.iso_code == 'fr' -%}Soumissions{%- else -%}Submissions{%- endif -%}
+          <svg class="qo-header__caret" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l5 5 5-5"/></svg>
+        </button>
+        <ul class="qo-header__dropdown-menu">
+          <li><a href="/pages/commande-rapide">{%- if request.locale.iso_code == 'fr' -%}Commande Rapide{%- else -%}Quick Order{%- endif -%}</a></li>
+          <li><a href="/pages/commande-personnalisee">{%- if request.locale.iso_code == 'fr' -%}Commande Personnalisée{%- else -%}Custom Order{%- endif -%}</a></li>
+        </ul>
+      </div>
     </nav>
 
     <!-- Logo : toujours centré -->
@@ -81,9 +88,18 @@
 <div class="qo-overlay" id="qo-overlay" aria-hidden="true">
   <nav class="qo-overlay__nav">
     <a href="/pages/services" class="qo-overlay__link">Services</a>
-    <a href="/pages/commande-rapide" class="qo-overlay__link">
-      {%- if request.locale.iso_code == 'fr' -%}Commande Rapide{%- else -%}Quick Order{%- endif -%}
-    </a>
+    <button class="qo-overlay__link qo-overlay__accordion-toggle" id="qo-acc-soumissions" aria-expanded="false">
+      {%- if request.locale.iso_code == 'fr' -%}Soumissions{%- else -%}Submissions{%- endif -%}
+      <svg class="qo-overlay__caret" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 1l5 5 5-5"/></svg>
+    </button>
+    <div class="qo-overlay__submenu" id="qo-acc-soumissions-menu">
+      <a href="/pages/commande-rapide" class="qo-overlay__sublink">
+        {%- if request.locale.iso_code == 'fr' -%}Commande Rapide{%- else -%}Quick Order{%- endif -%}
+      </a>
+      <a href="/pages/commande-personnalisee" class="qo-overlay__sublink">
+        {%- if request.locale.iso_code == 'fr' -%}Commande Personnalisée{%- else -%}Custom Order{%- endif -%}
+      </a>
+    </div>
     <a href="/collections/boutique" class="qo-overlay__link">
       {%- if request.locale.iso_code == 'fr' -%}Boutique{%- else -%}Shop{%- endif -%}
     </a>
@@ -145,8 +161,22 @@
     });
 
     // Fermer si clic sur un lien
-    overlay.querySelectorAll('.qo-overlay__link').forEach(function (a) {
+    overlay.querySelectorAll('.qo-overlay__link:not(.qo-overlay__accordion-toggle)').forEach(function (a) {
       a.addEventListener('click', closeOverlay);
+    });
+    overlay.querySelectorAll('.qo-overlay__sublink').forEach(function (a) {
+      a.addEventListener('click', closeOverlay);
+    });
+
+    // Accordéon sous-menu mobile
+    overlay.querySelectorAll('.qo-overlay__accordion-toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var menuId = btn.id + '-menu';
+        var menu   = document.getElementById(menuId);
+        if (!menu) return;
+        var open = menu.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
     });
   })();
 </script>
@@ -427,6 +457,54 @@
 
   .qo-overlay__link:first-child { border-top: 1px solid rgba(0,0,0,0.05); }
   .qo-overlay__link:hover { color: var(--qo-orange); }
+
+  /* Accordéon mobile */
+  .qo-overlay__accordion-toggle {
+    background: none;
+    border: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  .qo-overlay__caret {
+    width: 10px; height: 7px;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+
+  .qo-overlay__accordion-toggle[aria-expanded="true"] .qo-overlay__caret {
+    transform: rotate(180deg);
+  }
+
+  .qo-overlay__submenu {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background: #f9f9f9;
+  }
+
+  .qo-overlay__submenu.is-open { display: flex; }
+
+  .qo-overlay__sublink {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 16px 24px;
+    color: #555;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: color 0.15s;
+  }
+
+  .qo-overlay__sublink:hover { color: var(--qo-orange); }
 
   /* ===== LANG SWITCHER ===== */
   .qo-lang {
